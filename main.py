@@ -14,7 +14,7 @@ class Example(QMainWindow):
         self.chats = ['', '', '', '', '', '', '', '']
 
 
-        self.password = {"darling": "1234"}
+        self.password = {"darling": "1234", "1": "1"}
         self.on = False
         self.login = ''
 
@@ -47,7 +47,6 @@ class Example(QMainWindow):
         self.textBox2.resize(150, 20)
         self.textBox2.move(143, 85)
         self.textBox2.setEchoMode(QLineEdit.EchoMode.Password)
-
         self.btn = QPushButton('ENTER', self)
         self.btn.resize(self.btn.sizeHint())
         self.btn.move(180, 110)
@@ -69,10 +68,19 @@ class Example(QMainWindow):
         self.textBox4 = QLineEdit(self)
         self.textBox4.setVisible(False)
 
+        self.textBox5 = QLineEdit(self)
+        self.textBox5.setVisible(False)
+
         self.btn1 = QPushButton('>', self)
         self.btn1.setVisible(False)
         self.btn1.clicked.connect(self.update_message)
 
+        self.btn2 = QPushButton('->', self)
+        self.btn2.setVisible(False)
+        self.btn2.clicked.connect(self.now_ip)
+
+    def now_ip(self):
+        self.server = self.textBox4.text(), int(self.textBox5.text())
     def read_sok(self):
         while 1:
             data = self.sor.recv(1024)
@@ -169,7 +177,7 @@ class Example(QMainWindow):
         for i in self.password.keys():
             if self.login in i:
                 if password == self.password[i]:
-                    self.server = '192.168.3.4', 25551  # Данные сервера
+                    self.server = '192.168.3.4', 25525  # Данные сервера
                     self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                     self.sor.bind(('', 0))  # Задаем сокет как клиент
 
@@ -223,10 +231,22 @@ class Example(QMainWindow):
                     self.textBox3.resize(425, 20)
                     self.textBox3.move(0, 125)
                     self.textBox3.setVisible(True)
-                    self.textBox4.setText("interlocutor id")
-                    self.textBox4.resize(100, 20)
-                    self.textBox4.move(350, 0)
+
+                    self.textBox4.setText("interlocutor ip")
+                    self.textBox4.resize(75, 20)
+                    self.textBox4.move(299, 0)
                     self.textBox4.setVisible(True)
+
+                    self.textBox5.setText("adress")
+                    self.textBox5.resize(50, 20)
+                    self.textBox5.move(375, 0)
+                    self.textBox5.setVisible(True)
+                    self.btn0.setVisible(False)
+
+                    self.btn2.resize(self.btn.sizeHint())
+                    self.btn2.resize(24, 24)
+                    self.btn2.move(425, 0)
+                    self.btn2.setVisible(True)
 
 
 if __name__ == '__main__':
