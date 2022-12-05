@@ -2,32 +2,62 @@ import sys
 import qdarktheme
 import socket
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, \
+    QLabel, QLineEdit, QWidget
 from PyQt6 import QtGui, QtCore
 import threading
-
-class setting_window_menu(QWidget):
-    """
-    This "window" is a QWidget. If it has no parent, it
-    will appear as a free-floating window as we want.
-    """
-    def __init__(self):
-        super().__init__()
-        self.update()
-
-    def update(self):
-        self.setGeometry(1455, 650, 200, 0)
-        self.setWindowTitle('UNKNOWN INCOMING')
-        self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
-        self.btn_registration = QPushButton('  update the system  ', self)
-        self.btn_registration.resize(self.btn_registration.sizeHint())
-        self.btn_registration.move(0, 0)
-        self.btn_registration.resize(self.btn_registration.sizeHint())
-        self.btn_registration.clicked.connect(self.exit_menu)
-    def exit_menu(self):
-        pass
-
+ip = '192.168.3.4'
+adress = 25525
+update_mas = False
 class Example(QMainWindow):
+    global ip, adress, update_mas
+
+    class setting_window_menu(QWidget):
+        def __init__(self):
+            super().__init__()
+            self.update()
+
+        def update(self):
+
+            self.setGeometry(1455, 650, 200, 0)
+            self.setWindowTitle('UNKNOWN INCOMING')
+            self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
+            self.btn_registration = QPushButton('  update the system  ', self)
+            self.btn_registration.resize(self.btn_registration.sizeHint())
+            self.btn_registration.move(0, 0)
+            self.btn_registration.resize(self.btn_registration.sizeHint())
+            self.btn_registration.clicked.connect(self.exit_menu)
+
+            self.interlocutor_ip = QLineEdit(self)
+            self.interlocutor_ip.setText("interlocutor ip")
+            self.interlocutor_ip.resize(75, 20)
+            self.interlocutor_ip.move(0, 25)
+
+            self.interlocutor_adress = QLineEdit(self)
+            self.interlocutor_adress.setText("adress")
+            self.interlocutor_adress.resize(50, 20)
+            self.interlocutor_adress.move(80, 25)
+
+            self.btn_now_ip = QPushButton('->', self)
+            self.btn_now_ip.clicked.connect(self.now_ip)
+            self.btn_now_ip.resize(self.btn_now_ip.sizeHint())
+            self.btn_now_ip.resize(24, 24)
+            self.btn_now_ip.move(131, 25)
+            self.btn_now_ip.setVisible(True)
+
+        def now_ip(self):
+            global ip, adress, update_mas
+            try:
+                ip = self.interlocutor_ip.text()
+                adress = int(self.interlocutor_adress.text())
+                update_mas = True
+            except:
+                self.interlocutor_ip.setText("interlocutor ip")
+                self.interlocutor_adress.setText("adress")
+
+        def exit_menu(self):
+            pass
+
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -35,10 +65,11 @@ class Example(QMainWindow):
         self.password = {"darling": "1234", "1": "1"}
         self.on = False
         self.login = ''
-        self.window_setting = setting_window_menu()
+        self.window_setting = self.setting_window_menu()
         self.open = True
 
     def initUI(self):
+
         self.setGeometry(1000, 650, 450, 0)
         self.setWindowTitle('UNKNOWN INCOMING')
         self.setWindowIcon(QtGui.QIcon('cff.jpg'))
@@ -86,9 +117,6 @@ class Example(QMainWindow):
         self.textBox3 = QLineEdit(self)
         self.textBox3.setVisible(False)
 
-        self.textBox4 = QLineEdit(self)
-        self.textBox4.setVisible(False)
-
         self.btn_exit = QPushButton('EXIT', self)
         self.btn_exit.setVisible(False)
         self.btn_exit.clicked.connect(self.sys_exit)
@@ -97,16 +125,11 @@ class Example(QMainWindow):
         self.btn_settings.setVisible(False)
         self.btn_settings.clicked.connect(self.settings_window)
 
-        self.textBox5 = QLineEdit(self)
-        self.textBox5.setVisible(False)
+
 
         self.sending_sms = QPushButton('>', self)
         self.sending_sms.setVisible(False)
         self.sending_sms.clicked.connect(self.update_message)
-
-        self.btn_now_ip = QPushButton('->', self)
-        self.btn_now_ip.setVisible(False)
-        self.btn_now_ip.clicked.connect(self.now_ip)
 
     def settings_window(self):
         if self.open:
@@ -118,15 +141,15 @@ class Example(QMainWindow):
 
     def sys_exit(self):
         sys.exit()
+
     def now_ip(self):
         try:
-            self.server = self.textBox4.text(), int(self.textBox5.text())
+            self.server = ip, adress
             self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
                             self.server)  # Уведомляем сервер о подключении
         except:
-            self.textBox4.setText('wrong ip')
-            self.textBox5.setText('wrong id')
-            self.server = '192.168.3.4', 25525
+            print(302)
+
     def read_sok(self):
         while 1:
             data = self.sor.recv(1024)
@@ -152,8 +175,16 @@ class Example(QMainWindow):
             self.sms_text_9.resize(self.sms_text_9.sizeHint())
 
     def update_message(self):
+        global update_mas
+        if update_mas:
+            try:
+                self.server = ip, adress
+                self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
+                                self.server)  # Уведомляем сервер о подключении
+            except:
+                self.server = '192.168.3.4', 25525
+            update_mas = False
         self.text = self.textBox3.text()
-        self.chat_groups = self.textBox4.text()
         self.sor.sendto(('[' + self.login + ']' + self.text).encode('utf-8'), self.server)
         self.potok = threading.Thread(target=self.read_sok)
         self.potok.start()
@@ -222,7 +253,7 @@ class Example(QMainWindow):
         for i in self.password.keys():
             if self.login in i:
                 if password == self.password[i]:
-                    self.server = '192.168.3.4', 25525  # Данные сервера
+                    self.server = ip, adress  # Данные сервера
                     self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                     self.sor.bind(('', 0))  # Задаем сокет как клиент
 
@@ -277,32 +308,17 @@ class Example(QMainWindow):
                     self.textBox3.move(0, 125)
                     self.textBox3.setVisible(True)
 
-                    self.textBox4.setText("interlocutor ip")
-                    self.textBox4.resize(75, 20)
-                    self.textBox4.move(299, 0)
-                    self.textBox4.setVisible(True)
-
-                    self.textBox5.setText("adress")
-                    self.textBox5.resize(50, 20)
-                    self.textBox5.move(375, 0)
-                    self.textBox5.setVisible(True)
-
-                    self.btn_registration.setVisible(False)
-
-                    self.btn_now_ip.resize(self.btn_enter_registr.sizeHint())
-                    self.btn_now_ip.resize(24, 24)
-                    self.btn_now_ip.move(425, 0)
-                    self.btn_now_ip.setVisible(True)
-
                     self.btn_settings.resize(self.btn_exit.sizeHint())
-                    self.btn_settings.move(350, 25)
+                    self.btn_settings.move(350, 0)
                     self.btn_settings.resize(100, 25)
                     self.btn_settings.setVisible(True)
 
                     self.btn_exit.resize(self.btn_exit.sizeHint())
-                    self.btn_exit.move(400, 50)
+                    self.btn_exit.move(400, 25)
                     self.btn_exit.resize(50, 25)
                     self.btn_exit.setVisible(True)
+
+                    self.btn_registration.setVisible(False)
 
 
 

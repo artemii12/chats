@@ -2,7 +2,7 @@ import socket
 import pickle
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind(('192.168.3.4', 25525))
+sock.bind(('192.168.3.4', 25524))
 client = [] # Массив где храним адреса клиентов
 groups = []
 print('\033[40mStart Server')
