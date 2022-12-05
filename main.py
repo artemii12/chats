@@ -51,7 +51,7 @@ class Example(QMainWindow):
                 ip = self.interlocutor_ip.text()
                 adress = int(self.interlocutor_adress.text())
                 update_mas = True
-            except:
+            except ValueError:
                 self.interlocutor_ip.setText("interlocutor ip")
                 self.interlocutor_adress.setText("adress")
 
@@ -59,6 +59,7 @@ class Example(QMainWindow):
             pass
 
     def __init__(self):
+
         super().__init__()
         self.initUI()
         self.chats = ['', '', '', '', '', '', '', '']
@@ -67,10 +68,9 @@ class Example(QMainWindow):
         self.login = ''
         self.window_setting = self.setting_window_menu()
         self.open = True
-        self.exit = True
+        self.exit = False
 
     def initUI(self):
-
         self.setGeometry(1000, 650, 450, 0)
         self.setWindowTitle('UNKNOWN INCOMING')
         self.setWindowIcon(QtGui.QIcon('cff.jpg'))
@@ -141,11 +141,13 @@ class Example(QMainWindow):
             self.open = True
 
     def sys_exit(self):
-        self.exit = False
-
+        self.exit = True
+        if self.exit:
+            self.exit = False
+            sys.exit()
 
     def read_sok(self):
-        while 1:
+        while self.exit:
             try:
                 data = self.sor.recv(1024)
                 self.text_utf = data.decode('utf-8')
@@ -173,7 +175,7 @@ class Example(QMainWindow):
             self.sms_text_9.resize(self.sms_text_9.sizeHint())
 
     def update_message(self):
-        global update_mas
+        global update_mas, ip, adress, error
         if update_mas:
             try:
                 self.server = ip, adress
@@ -181,6 +183,9 @@ class Example(QMainWindow):
                                 self.server)  # Уведомляем сервер о подключении
             except:
                 self.server = '192.168.3.4', 25525
+                self.chats.append(f'Не верно введен ip/adress {self.server[0],self.server[1]}')
+                del self.chats[0]
+                print(1)
             update_mas = False
         self.text = self.textBox3.text()
         self.sor.sendto(('[' + self.login + ']' + self.text).encode('utf-8'), self.server)
@@ -199,7 +204,6 @@ class Example(QMainWindow):
         self.sms_text_5.resize(self.sms_text_5.sizeHint())
         self.sms_text_6.setText(f'{self.chats[4]}')
         self.sms_text_6.resize(self.sms_text_6.sizeHint())
-
         self.sms_text_7.setText(f'{self.chats[5]}')
         self.sms_text_7.resize(self.sms_text_7.sizeHint())
         self.sms_text_8.setText(f'{self.chats[6]}')
