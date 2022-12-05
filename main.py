@@ -1,11 +1,11 @@
 import sys
 import qdarktheme
 import socket
-
+import threading
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, \
     QLabel, QLineEdit, QWidget
 from PyQt6 import QtGui, QtCore
-import threading
+
 ip = '192.168.3.4'
 adress = 25525
 update_mas = False
