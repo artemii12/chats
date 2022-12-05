@@ -67,6 +67,7 @@ class Example(QMainWindow):
         self.login = ''
         self.window_setting = self.setting_window_menu()
         self.open = True
+        self.exit = True
 
     def initUI(self):
 
@@ -79,7 +80,7 @@ class Example(QMainWindow):
         self.btn_registration.resize(self.btn_registration.sizeHint())
         self.btn_registration.move(375, 0)
         self.btn_registration.resize(75, 25)
-        self.btn_registration.clicked.connect(self.now_ip)
+        self.btn_registration.clicked.connect(self.registr)
 
         self.text_LOGIN = QLabel(self)
         self.text_LOGIN.setText('LOGIN  ')
@@ -140,20 +141,17 @@ class Example(QMainWindow):
             self.open = True
 
     def sys_exit(self):
-        sys.exit()
+        self.exit = False
 
-    def now_ip(self):
-        try:
-            self.server = ip, adress
-            self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
-                            self.server)  # Уведомляем сервер о подключении
-        except:
-            print(302)
 
     def read_sok(self):
         while 1:
-            data = self.sor.recv(1024)
-            self.text_utf = data.decode('utf-8')
+            try:
+                data = self.sor.recv(1024)
+                self.text_utf = data.decode('utf-8')
+            except ConnectionResetError:
+                self.text_utf = 'Удаленный хост принудительно разорвал существующее подключение'
+
             self.chats.append(self.text_utf)
             del self.chats[0]
             self.sms_text_1.setText(f'{self.chats[0]}')
@@ -188,6 +186,7 @@ class Example(QMainWindow):
         self.sor.sendto(('[' + self.login + ']' + self.text).encode('utf-8'), self.server)
         self.potok = threading.Thread(target=self.read_sok)
         self.potok.start()
+
         self.chats.append(f'[{self.login}]-{self.text}')
         del self.chats[0]
         self.sms_text_1.setText(f'{self.chats[0]}')
@@ -207,6 +206,8 @@ class Example(QMainWindow):
         self.sms_text_8.resize(self.sms_text_8.sizeHint())
         self.sms_text_9.setText(f'{self.chats[7]}')
         self.sms_text_9.resize(self.sms_text_9.sizeHint())
+
+
 
     def check(self):
         if self.on:
