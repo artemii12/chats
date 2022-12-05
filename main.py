@@ -3,25 +3,26 @@ import qdarktheme
 import socket
 import threading
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, \
-    QLabel, QLineEdit, QWidget
+    QLabel, QLineEdit, QWidget, QCheckBox
 from PyQt6 import QtGui, QtCore
 
 ip = '192.168.3.4'
-adress = 25525
+Address = 25525
 update_mas = False
+dark = 0
+custom_colors = {}
 class Example(QMainWindow):
-    global ip, adress, update_mas
+    global ip, Address, update_mas
 
-    class setting_window_menu(QWidget):
+    class SettingWindowMenu(QWidget):
         def __init__(self):
             super().__init__()
             self.update()
-
         def update(self):
-
-            self.setGeometry(1455, 650, 200, 0)
+            self.setGeometry(1455, 650, 200, 250)
             self.setWindowTitle('UNKNOWN INCOMING')
             self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
+            self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
             self.btn_registration = QPushButton('  update the system  ', self)
             self.btn_registration.resize(self.btn_registration.sizeHint())
             self.btn_registration.move(0, 0)
@@ -29,8 +30,8 @@ class Example(QMainWindow):
             self.btn_registration.clicked.connect(self.exit_menu)
 
             self.interlocutor_ip = QLineEdit(self)
-            self.interlocutor_ip.setText("interlocutor ip")
-            self.interlocutor_ip.resize(75, 20)
+            self.interlocutor_ip.setText("ip")
+            self.interlocutor_ip.resize(77, 20)
             self.interlocutor_ip.move(0, 25)
 
             self.interlocutor_adress = QLineEdit(self)
@@ -45,32 +46,99 @@ class Example(QMainWindow):
             self.btn_now_ip.move(131, 25)
             self.btn_now_ip.setVisible(True)
 
+            self.checkbox = QCheckBox("white theme", self)
+            self.checkbox.move(0, 50)
+            self.checkbox.resize(self.checkbox.sizeHint())
+            self.checkbox.clicked.connect(self.yes_no)
+
+            self.background = QLineEdit(self)
+            self.background.setText("#202124")
+            self.background.resize(110, 20)
+            self.background.move(0, 75)
+
+            self.border = QLineEdit(self)
+            self.border.setText("#3f4042")
+            self.border.resize(110, 20)
+            self.border.move(0, 100)
+
+            self.foreground = QLineEdit(self)
+            self.foreground.setText("#e4e7eb")
+            self.foreground.resize(110, 20)
+            self.foreground.move(0, 125)
+
+            self.primary = QLineEdit(self)
+            self.primary.setText("#5f9af466")
+            self.primary.resize(110, 20)
+            self.primary.move(0, 150)
+
+            self.input_background = QLineEdit(self)
+            self.input_background.setText("#3f4042")
+            self.input_background.resize(110, 20)
+            self.input_background.move(0, 175)
+
+            self.inputButton_hoverBackground = QLineEdit(self)
+            self.inputButton_hoverBackground.setText("#ffffff25")
+            self.inputButton_hoverBackground.resize(110, 20)
+            self.inputButton_hoverBackground.move(0, 200)
+
+            self.btn_background = QPushButton('UPDATE_COLORS', self)
+            self.btn_background.clicked.connect(self.update_colors)
+            self.btn_background.resize(self.btn_background.sizeHint())
+            self.btn_background.move(0, 225)
+
+        def update_colors(self):
+            global custom_colors, dark
+            background = self.background.text()
+            border = self.border.text()
+            foreground = self.foreground.text()
+            primary = self.primary.text()
+            input_background = self.input_background.text()
+            input_button_hover_background = self.inputButton_hoverBackground.text()
+            custom_colors = {"background": f"{background}",
+                             "border": f"{border}",
+                             "foreground": f"{foreground}",
+                             "primary": f"{primary}",
+                             "input.background": f"{input_background}",
+                             "inputButton.hoverBackground": f"{input_button_hover_background}"}
+            self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
+            dark = 3
+
+        def yes_no(self):
+            global dark, custom_colors
+            if self.checkbox.isChecked():
+                dark = 1
+                self.setStyleSheet(qdarktheme.load_stylesheet("light"))
+            if not self.checkbox.isChecked():
+                dark = 2
+                self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
+
         def now_ip(self):
-            global ip, adress, update_mas
+            global ip, Address, update_mas
             try:
                 ip = self.interlocutor_ip.text()
-                adress = int(self.interlocutor_adress.text())
+                Address = int(self.interlocutor_adress.text())
                 update_mas = True
             except ValueError:
                 self.interlocutor_ip.setText("interlocutor ip")
-                self.interlocutor_adress.setText("adress")
+                self.interlocutor_adress.setText("Address")
 
         def exit_menu(self):
             pass
 
     def __init__(self):
-
+        global dark
         super().__init__()
-        self.initUI()
+        self.setStyleSheet(qdarktheme.load_stylesheet())
+        self.init_ui()
         self.chats = ['', '', '', '', '', '', '', '']
         self.password = {"darling": "1234", "1": "1"}
         self.on = False
         self.login = ''
-        self.window_setting = self.setting_window_menu()
+        self.window_setting = self.SettingWindowMenu()
         self.open = True
         self.exit = False
 
-    def initUI(self):
+    def init_ui(self):
         self.setGeometry(1000, 650, 450, 0)
         self.setWindowTitle('UNKNOWN INCOMING')
         self.setWindowIcon(QtGui.QIcon('cff.jpg'))
@@ -80,7 +148,7 @@ class Example(QMainWindow):
         self.btn_registration.resize(self.btn_registration.sizeHint())
         self.btn_registration.move(375, 0)
         self.btn_registration.resize(75, 25)
-        self.btn_registration.clicked.connect(self.registr)
+        self.btn_registration.clicked.connect(self.registration)
 
         self.text_LOGIN = QLabel(self)
         self.text_LOGIN.setText('LOGIN  ')
@@ -132,13 +200,22 @@ class Example(QMainWindow):
         self.sending_sms.setVisible(False)
         self.sending_sms.clicked.connect(self.update_message)
 
+
     def settings_window(self):
+        global dark, custom_colors
         if self.open:
             self.window_setting.show()
             self.open = False
         else:
+            if dark == 2:
+                self.setStyleSheet(qdarktheme.load_stylesheet())
+            if dark == 1:
+                self.setStyleSheet(qdarktheme.load_stylesheet("light"))
             self.window_setting.hide()
             self.open = True
+            if dark == 3:
+                self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
+                dark = 3
 
     def sys_exit(self):
         self.exit = True
@@ -175,10 +252,17 @@ class Example(QMainWindow):
             self.sms_text_9.resize(self.sms_text_9.sizeHint())
 
     def update_message(self):
-        global update_mas, ip, adress, error
+        global update_mas, ip, Address, error, dark, custom_colors
+        if dark == 2:
+            self.setStyleSheet(qdarktheme.load_stylesheet())
+        if dark == 1:
+            self.setStyleSheet(qdarktheme.load_stylesheet("light"))
+        if dark == 3:
+            self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
+            dark = 3
         if update_mas:
             try:
-                self.server = ip, adress
+                self.server = ip, Address
                 self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
                                 self.server)  # Уведомляем сервер о подключении
             except:
@@ -225,10 +309,10 @@ class Example(QMainWindow):
         self.password[login] = password
         self.textBox1.setText('you are registered')
         self.textBox2.setText('')
-        self.registr()
+        self.registration()
         print(self.password)
 
-    def registr(self):
+    def registration(self):
         self.text_LOGIN.setText('LOGIN  ')
         self.text_PASSWORD.setText('PASSWORD  ')
         if self.on:
@@ -258,7 +342,7 @@ class Example(QMainWindow):
         for i in self.password.keys():
             if self.login in i:
                 if password == self.password[i]:
-                    self.server = ip, adress  # Данные сервера
+                    self.server = ip, Address  # Данные сервера
                     self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                     self.sor.bind(('', 0))  # Задаем сокет как клиент
 
@@ -326,13 +410,12 @@ class Example(QMainWindow):
                     self.btn_registration.setVisible(False)
 
 
-
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = Example()
     window.show()
-    app.setStyleSheet(qdarktheme.load_stylesheet())
     app_icon = QtGui.QIcon()
     app_icon.addFile('cff.jpg', QtCore.QSize(16, 16))
     app.setWindowIcon(app_icon)
+
     app.exec()
