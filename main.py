@@ -1,4 +1,5 @@
 import sys
+
 import qdarktheme
 import socket
 import threading
@@ -7,8 +8,9 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, \
 from PyQt6 import QtGui, QtCore
 
 ip = '192.168.3.4'
-Address = 25525
+Address = 25524
 update_mas = False
+system_update = False
 dark = 0
 custom_colors = {}
 class Example(QMainWindow):
@@ -52,42 +54,80 @@ class Example(QMainWindow):
             self.checkbox.clicked.connect(self.yes_no)
 
             self.background = QLineEdit(self)
-            self.background.setText("#202124")
+            self.background.setText("#bcacd4")
             self.background.resize(110, 20)
             self.background.move(0, 75)
 
             self.border = QLineEdit(self)
-            self.border.setText("#3f4042")
+            self.border.setText("#d596fa")
             self.border.resize(110, 20)
             self.border.move(0, 100)
 
             self.foreground = QLineEdit(self)
-            self.foreground.setText("#e4e7eb")
+            self.foreground.setText("#18047e")
             self.foreground.resize(110, 20)
             self.foreground.move(0, 125)
 
             self.primary = QLineEdit(self)
-            self.primary.setText("#5f9af466")
+            self.primary.setText("#8624e4")
             self.primary.resize(110, 20)
             self.primary.move(0, 150)
 
             self.input_background = QLineEdit(self)
-            self.input_background.setText("#3f4042")
+            self.input_background.setText("#d596fa")
             self.input_background.resize(110, 20)
             self.input_background.move(0, 175)
 
             self.inputButton_hoverBackground = QLineEdit(self)
-            self.inputButton_hoverBackground.setText("#ffffff25")
+            self.inputButton_hoverBackground.setText("#18047e")
             self.inputButton_hoverBackground.resize(110, 20)
             self.inputButton_hoverBackground.move(0, 200)
 
-            self.btn_background = QPushButton('UPDATE_COLORS', self)
-            self.btn_background.clicked.connect(self.update_colors)
-            self.btn_background.resize(self.btn_background.sizeHint())
-            self.btn_background.move(0, 225)
+            self.text_background = QLabel(self)
+            self.text_background.setText('background')
+            self.text_background.resize(self.text_background.sizeHint())
+            self.text_background.move(115, 75)
+
+            self.text_border = QLabel(self)
+            self.text_border.setText('border')
+            self.text_border.resize(self.text_border.sizeHint())
+            self.text_border.move(115, 100)
+
+            self.text_foreground = QLabel(self)
+            self.text_foreground.setText('foreground')
+            self.text_foreground.resize(self.text_foreground.sizeHint())
+            self.text_foreground.move(115, 125)
+
+            self.text_primary = QLabel(self)
+            self.text_primary.setText('primary')
+            self.text_primary.resize(self.text_primary.sizeHint())
+            self.text_primary.move(115, 150)
+
+            self.text_input_background = QLabel(self)
+            self.text_input_background.setText('input')
+            self.text_input_background.resize(self.text_input_background.sizeHint())
+            self.text_input_background.move(115, 172)
+            self.text_input_background = QLabel(self)
+            self.text_input_background.setText('background')
+            self.text_input_background.resize(self.text_input_background.sizeHint())
+            self.text_input_background.move(115, 180)
+
+            self.text_inputButton_hoverBackground = QLabel(self)
+            self.text_inputButton_hoverBackground.setText('inputButton')
+            self.text_inputButton_hoverBackground.resize(self.text_inputButton_hoverBackground.sizeHint())
+            self.text_inputButton_hoverBackground.move(115, 197)
+            self.text_inputButton_hoverBackground = QLabel(self)
+            self.text_inputButton_hoverBackground.setText('Background')
+            self.text_inputButton_hoverBackground.resize(self.text_inputButton_hoverBackground.sizeHint())
+            self.text_inputButton_hoverBackground.move(115, 205)
+
+            self.text_foreground = QPushButton('UPDATE_COLORS', self)
+            self.text_foreground.clicked.connect(self.update_colors)
+            self.text_foreground.resize(self.text_foreground.sizeHint())
+            self.text_foreground.move(0, 225)
 
         def update_colors(self):
-            global custom_colors, dark
+            global custom_colors, dark, system_update
             background = self.background.text()
             border = self.border.text()
             foreground = self.foreground.text()
@@ -102,6 +142,7 @@ class Example(QMainWindow):
                              "inputButton.hoverBackground": f"{input_button_hover_background}"}
             self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
             dark = 3
+            system_update = True
 
         def yes_no(self):
             global dark, custom_colors
@@ -126,7 +167,7 @@ class Example(QMainWindow):
             pass
 
     def __init__(self):
-        global dark
+        global dark, timer
         super().__init__()
         self.setStyleSheet(qdarktheme.load_stylesheet())
         self.init_ui()
@@ -137,6 +178,7 @@ class Example(QMainWindow):
         self.window_setting = self.SettingWindowMenu()
         self.open = True
         self.exit = False
+        self.control = True
 
     def init_ui(self):
         self.setGeometry(1000, 650, 450, 0)
@@ -194,11 +236,20 @@ class Example(QMainWindow):
         self.btn_settings.setVisible(False)
         self.btn_settings.clicked.connect(self.settings_window)
 
-
-
         self.sending_sms = QPushButton('>', self)
         self.sending_sms.setVisible(False)
         self.sending_sms.clicked.connect(self.update_message)
+        self.update_setting()
+
+    def update_setting(self):
+        global dark
+        if dark == 2:
+            self.setStyleSheet(qdarktheme.load_stylesheet())
+        if dark == 1:
+            self.setStyleSheet(qdarktheme.load_stylesheet("light"))
+        if dark == 3:
+            self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
+            dark = 3
 
 
     def settings_window(self):
@@ -228,6 +279,7 @@ class Example(QMainWindow):
             try:
                 data = self.sor.recv(1024)
                 self.text_utf = data.decode('utf-8')
+                print(self.text_utf)
             except ConnectionResetError:
                 self.text_utf = 'Удаленный хост принудительно разорвал существующее подключение'
 
@@ -260,7 +312,9 @@ class Example(QMainWindow):
         if dark == 3:
             self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
             dark = 3
+            system_update = False
         if update_mas:
+
             try:
                 self.server = ip, Address
                 self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
@@ -270,6 +324,8 @@ class Example(QMainWindow):
                 self.chats.append(f'Не верно введен ip/adress {self.server[0],self.server[1]}')
                 del self.chats[0]
                 print(1)
+            self.chats.append(f'the ip address is not verified: {ip}:{Address}')
+            del self.chats[0]
             update_mas = False
         self.text = self.textBox3.text()
         self.sor.sendto(('[' + self.login + ']' + self.text).encode('utf-8'), self.server)
@@ -278,6 +334,12 @@ class Example(QMainWindow):
 
         self.chats.append(f'[{self.login}]-{self.text}')
         del self.chats[0]
+        if self.control:
+            data = self.sor.recv(1024)
+            self.text_utf = data.decode('utf-8')
+            self.chats.append(f'{self.text_utf}: {ip}:{Address}')
+            del self.chats[0]
+            self.control = False
         self.sms_text_1.setText(f'{self.chats[0]}')
         self.sms_text_1.resize(self.sms_text_1.sizeHint())
         self.sms_text_2.setText(f'{self.chats[1]}')
@@ -294,6 +356,7 @@ class Example(QMainWindow):
         self.sms_text_8.resize(self.sms_text_8.sizeHint())
         self.sms_text_9.setText(f'{self.chats[7]}')
         self.sms_text_9.resize(self.sms_text_9.sizeHint())
+        self.textBox3.setText('')
 
 
 
@@ -337,17 +400,19 @@ class Example(QMainWindow):
             self.on = True
 
     def count(self):
+        global ip, Address
         self.login = self.textBox1.text()
         password = self.textBox2.text()
+        self.server = ip, Address  # Данные сервера
+        self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sor.bind(('', 0))  # Задаем сокет как клиент
+
+        self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
+                        self.server)  # Уведомляем сервер о подключении
+
         for i in self.password.keys():
             if self.login in i:
                 if password == self.password[i]:
-                    self.server = ip, Address  # Данные сервера
-                    self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                    self.sor.bind(('', 0))  # Задаем сокет как клиент
-
-                    self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
-                                    self.server)  # Уведомляем сервер о подключении
 
                     self.text_LOGIN.setVisible(False)
                     self.textBox1.setVisible(False)
