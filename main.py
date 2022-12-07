@@ -37,7 +37,7 @@ class Example(QMainWindow):
             self.interlocutor_ip.move(0, 25)
 
             self.interlocutor_adress = QLineEdit(self)
-            self.interlocutor_adress.setText("adress")
+            self.interlocutor_adress.setText("address")
             self.interlocutor_adress.resize(50, 20)
             self.interlocutor_adress.move(80, 25)
 
@@ -156,11 +156,9 @@ class Example(QMainWindow):
         def now_ip(self):
             global ip, Address, update_mas
             try:
-                update_mas = True
-                ip = self.interlocutor_ip.text()
+                ip = str(self.interlocutor_ip.text())
                 Address = int(self.interlocutor_adress.text())
-                print(ip, Address)
-
+                update_mas = True
             except ValueError:
                 self.interlocutor_ip.setText("interlocutor ip")
                 self.interlocutor_adress.setText("Address")
@@ -280,7 +278,7 @@ class Example(QMainWindow):
             try:
                 data = self.sor.recv(1024)
                 self.text_utf = data.decode('utf-8')
-                print(self.text_utf)
+
             except ConnectionResetError:
                 self.text_utf = 'Удаленный хост принудительно разорвал существующее подключение'
 
@@ -316,23 +314,19 @@ class Example(QMainWindow):
             system_update = False
         self.text = self.textBox3.text()
         if ip == '':
-            print("304 error")
             self.chats.append('ip and address were not added to the settings')
             del self.chats[0]
         else:
             if update_mas:
-                self.server = ip, Address  # Данные сервера
-                self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                self.sor.bind(('', 0))  # Задаем сокет как клиент
-                self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
-                                self.server)  # Уведомляем сервер о подключении
                 try:
                     self.server = ip, Address
+                    self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                    self.sor.bind(('', 0))  # Задаем сокет как клиент
                     self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
                                     self.server)  # Уведомляем сервер о подключении
                 except:
                     self.server = ip, Address
-                    self.chats.append(f'Не верно введен ip/adress {self.server[0],self.server[1]}')
+                    self.chats.append(f'Не верно введен ip|adress {self.server[0],self.server[1]}')
                     del self.chats[0]
                 self.chats.append(f'the ip address is not verified: {ip}:{Address}')
                 del self.chats[0]
@@ -379,7 +373,6 @@ class Example(QMainWindow):
         self.textBox1.setText('you are registered')
         self.textBox2.setText('')
         self.registration()
-        print(self.password)
 
     def registration(self):
         self.text_LOGIN.setText('LOGIN  ')
@@ -418,7 +411,6 @@ class Example(QMainWindow):
 
             self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
                             self.server)  # Уведомляем сервер о подключении
-
         for i in self.password.keys():
             if self.login in i:
                 if password == self.password[i]:
