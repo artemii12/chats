@@ -317,11 +317,9 @@ class Example(QMainWindow):
             self.chats.append('ip and address were not added to the settings')
             del self.chats[0]
         else:
+            self.server = ip, Address
             if update_mas:
                 try:
-                    self.server = ip, Address
-                    self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                    self.sor.bind(('', 0))  # Задаем сокет как клиент
                     self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
                                     self.server)  # Уведомляем сервер о подключении
                 except:
@@ -330,7 +328,7 @@ class Example(QMainWindow):
                     del self.chats[0]
                 self.chats.append(f'the ip address is not verified: {ip}:{Address}')
                 del self.chats[0]
-                update_mas = False
+                print(1)
             self.sor.sendto(('[' + self.login + ']' + self.text).encode('utf-8'), self.server)
             self.potok = threading.Thread(target=self.read_sok)
             self.potok.start()
@@ -340,6 +338,8 @@ class Example(QMainWindow):
                 self.chats.append(f'{self.text_utf}')
                 del self.chats[0]
                 self.control = False
+            print(2)
+            update_mas = False
         self.chats.append(f'[{self.login}]-{self.text}')
         del self.chats[0]
         self.sms_text_1.setText(f'{self.chats[0]}')
@@ -403,7 +403,8 @@ class Example(QMainWindow):
         self.login = self.textBox1.text()
         password = self.textBox2.text()
         if ip == '':
-            pass
+            self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.sor.bind(('', 0))  # Задаем сокет как клиент
         else:
             self.server = ip, Address  # Данные сервера
             self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
