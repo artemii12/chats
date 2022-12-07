@@ -7,8 +7,8 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, \
     QLabel, QLineEdit, QWidget, QCheckBox
 from PyQt6 import QtGui, QtCore
 
-ip = '192.168.3.4'
-Address = 25524
+ip = ''
+Address = 0
 update_mas = False
 system_update = False
 dark = 0
@@ -156,9 +156,11 @@ class Example(QMainWindow):
         def now_ip(self):
             global ip, Address, update_mas
             try:
+                update_mas = True
                 ip = self.interlocutor_ip.text()
                 Address = int(self.interlocutor_adress.text())
-                update_mas = True
+                print(ip, Address)
+
             except ValueError:
                 self.interlocutor_ip.setText("interlocutor ip")
                 self.interlocutor_adress.setText("Address")
@@ -251,7 +253,6 @@ class Example(QMainWindow):
             self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
             dark = 3
 
-
     def settings_window(self):
         global dark, custom_colors
         if self.open:
@@ -313,33 +314,40 @@ class Example(QMainWindow):
             self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
             dark = 3
             system_update = False
-        if update_mas:
-
-            try:
-                self.server = ip, Address
+        self.text = self.textBox3.text()
+        if ip == '':
+            print("304 error")
+            self.chats.append('ip and address were not added to the settings')
+            del self.chats[0]
+        else:
+            if update_mas:
+                self.server = ip, Address  # Данные сервера
+                self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                self.sor.bind(('', 0))  # Задаем сокет как клиент
                 self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
                                 self.server)  # Уведомляем сервер о подключении
-            except:
-                self.server = '192.168.3.4', 25525
-                self.chats.append(f'Не верно введен ip/adress {self.server[0],self.server[1]}')
+                try:
+                    self.server = ip, Address
+                    self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
+                                    self.server)  # Уведомляем сервер о подключении
+                except:
+                    self.server = ip, Address
+                    self.chats.append(f'Не верно введен ip/adress {self.server[0],self.server[1]}')
+                    del self.chats[0]
+                self.chats.append(f'the ip address is not verified: {ip}:{Address}')
                 del self.chats[0]
-                print(1)
-            self.chats.append(f'the ip address is not verified: {ip}:{Address}')
-            del self.chats[0]
-            update_mas = False
-        self.text = self.textBox3.text()
-        self.sor.sendto(('[' + self.login + ']' + self.text).encode('utf-8'), self.server)
-        self.potok = threading.Thread(target=self.read_sok)
-        self.potok.start()
-
+                update_mas = False
+            self.sor.sendto(('[' + self.login + ']' + self.text).encode('utf-8'), self.server)
+            self.potok = threading.Thread(target=self.read_sok)
+            self.potok.start()
+            if self.control:
+                data = self.sor.recv(1024)
+                self.text_utf = data.decode('utf-8')
+                self.chats.append(f'{self.text_utf}')
+                del self.chats[0]
+                self.control = False
         self.chats.append(f'[{self.login}]-{self.text}')
         del self.chats[0]
-        if self.control:
-            data = self.sor.recv(1024)
-            self.text_utf = data.decode('utf-8')
-            self.chats.append(f'{self.text_utf}: {ip}:{Address}')
-            del self.chats[0]
-            self.control = False
         self.sms_text_1.setText(f'{self.chats[0]}')
         self.sms_text_1.resize(self.sms_text_1.sizeHint())
         self.sms_text_2.setText(f'{self.chats[1]}')
@@ -357,8 +365,6 @@ class Example(QMainWindow):
         self.sms_text_9.setText(f'{self.chats[7]}')
         self.sms_text_9.resize(self.sms_text_9.sizeHint())
         self.textBox3.setText('')
-
-
 
     def check(self):
         if self.on:
@@ -403,12 +409,15 @@ class Example(QMainWindow):
         global ip, Address
         self.login = self.textBox1.text()
         password = self.textBox2.text()
-        self.server = ip, Address  # Данные сервера
-        self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sor.bind(('', 0))  # Задаем сокет как клиент
+        if ip == '':
+            pass
+        else:
+            self.server = ip, Address  # Данные сервера
+            self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.sor.bind(('', 0))  # Задаем сокет как клиент
 
-        self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
-                        self.server)  # Уведомляем сервер о подключении
+            self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
+                            self.server)  # Уведомляем сервер о подключении
 
         for i in self.password.keys():
             if self.login in i:
