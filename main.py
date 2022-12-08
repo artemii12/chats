@@ -21,6 +21,24 @@ class Example(QMainWindow):
             super().__init__()
             self.update()
             self.old_pos = None
+
+        # вызывается при нажатии кнопки мыши
+        def mousePressEvent(self, event):
+            if event.button() == QtCore.Qt.MouseButton.LeftButton:
+                self.old_pos = event.pos()
+
+        # вызывается при отпускании кнопки мыши
+        def mouseReleaseEvent(self, event):
+            if event.button() == QtCore.Qt.MouseButton.LeftButton:
+                self.old_pos = None
+
+        # вызывается всякий раз, когда мышь перемещается
+        def mouseMoveEvent(self, event):
+            if not self.old_pos:
+                return
+            delta = event.pos() - self.old_pos
+            self.move(self.pos() + delta)
+
         def update(self):
             self.setGeometry(1455, 650, 200, 250)
             self.setWindowTitle('UNKNOWN INCOMING')
@@ -181,6 +199,24 @@ class Example(QMainWindow):
         self.open = True
         self.exit = False
         self.control = True
+        self.old_pos = None
+
+    # вызывается при нажатии кнопки мыши
+    def mousePressEvent(self, event):
+        if event.button() == QtCore.Qt.MouseButton.LeftButton:
+            self.old_pos = event.pos()
+
+    # вызывается при отпускании кнопки мыши
+    def mouseReleaseEvent(self, event):
+        if event.button() == QtCore.Qt.MouseButton.LeftButton:
+            self.old_pos = None
+
+    # вызывается всякий раз, когда мышь перемещается
+    def mouseMoveEvent(self, event):
+        if not self.old_pos:
+            return
+        delta = event.pos() - self.old_pos
+        self.move(self.pos() + delta)
 
     def init_ui(self):
         self.setGeometry(1000, 650, 450, 0)

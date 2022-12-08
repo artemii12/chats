@@ -20,17 +20,18 @@ class Example(QMainWindow):
         super().__init__()
         self.initUI()
         self.exit = True
+        self.old_pos = None
         self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
-        custom_colors = {"background": "#bcacd4",
-                         "border": "#d596fa",
-                         "foreground": "#18047e",
-                         "primary": "#8624e4",
-                         "input.background": "#d596fa",
-                         "inputButton.hoverBackground": "#18047e"}
+        custom_colors = {"background": "#EEEEEE",
+                         "border": "#53354A",
+                         "foreground": "#303841",
+                         "primary": "#3A4750",
+                         "input.background": "#EBFFFA",
+                         "inputButton.hoverBackground": "#303841"}
         self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
 
     def initUI(self):
-        self.setGeometry(300, 300, 150, 123)
+        self.setGeometry(300, 300, 150, 150)
         self.setWindowTitle('Server_Window')
         self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
 
@@ -61,13 +62,21 @@ class Example(QMainWindow):
         self.Address_box.move(50, 25)
 
 
-        self.Exit_menu = QPushButton('exiting the program', self)
+        self.Exit_menu = QPushButton('exit from settings', self)
         self.Exit_menu.resize(150, 20)
         self.Exit_menu.move(0, 100)
         self.Exit_menu.clicked.connect(self.exit_menu)
 
-    def exit_menu(self):
+        self.all_exit = QPushButton('exit', self)
+        self.all_exit.resize(150, 20)
+        self.all_exit.move(0, 125)
+        self.all_exit.clicked.connect(self.all_exit_program)
+
+    def all_exit_program(self):
         del Example
+
+    def exit_menu(self):
+        Example.hide(self)
 
     def update(self):
         global IP, Address, sock, start
@@ -79,6 +88,23 @@ class Example(QMainWindow):
                    int(self.Address_box.text())))
 
         start = True
+
+    # вызывается при нажатии кнопки мыши
+    def mousePressEvent(self, event):
+            if event.button() == QtCore.Qt.MouseButton.LeftButton:
+                self.old_pos = event.pos()
+
+    # вызывается при отпускании кнопки мыши
+    def mouseReleaseEvent(self, event):
+        if event.button() == QtCore.Qt.MouseButton.LeftButton:
+            self.old_pos = None
+
+    # вызывается всякий раз, когда мышь перемещается
+    def mouseMoveEvent(self, event):
+        if not self.old_pos:
+            return
+        delta = event.pos() - self.old_pos
+        self.move(self.pos() + delta)
 
     def starting_server(self):
         global start
