@@ -20,11 +20,13 @@ class Example(QMainWindow):
         def __init__(self):
             super().__init__()
             self.update()
+            self.old_pos = None
         def update(self):
             self.setGeometry(1455, 650, 200, 250)
             self.setWindowTitle('UNKNOWN INCOMING')
             self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
             self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
+
             self.btn_registration = QPushButton('  update the system  ', self)
             self.btn_registration.resize(self.btn_registration.sizeHint())
             self.btn_registration.move(0, 0)
