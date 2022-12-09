@@ -7,10 +7,10 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, \
 from PyQt6 import QtGui, QtCore
 #  192.168.3.4
 #  25525
-IP = ''
-Address = 0
+IPServer = ''
+AddressServer = 0
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind((IP, Address))
+sock.bind((IPServer, AddressServer))
 client = []  # Массив где храним адреса клиентов
 groups = []
 password = {"darling": "1234"}
@@ -22,13 +22,9 @@ class Example(QMainWindow):
         self.exit = True
         self.old_pos = None
         self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
-        custom_colors = {"background": "#EEEEEE",
-                         "border": "#53354A",
-                         "foreground": "#303841",
-                         "primary": "#3A4750",
-                         "input.background": "#EBFFFA",
-                         "inputButton.hoverBackground": "#303841"}
-        self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
+
+        self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={'foreground>input.placeholder': '#D0BCFF',
+                                                                     "primary": "#D0BCFF", 'border': '#202124'}))
 
     def initUI(self):
         self.setGeometry(300, 300, 150, 150)
@@ -79,9 +75,9 @@ class Example(QMainWindow):
         Example.hide(self)
 
     def update(self):
-        global IP, Address, sock, start
-        IP = str(self.IP_box.text())
-        Address = int(self.Address_box.text())
+        global IPServer, AddressServer, sock, start
+        IPServer = str(self.IP_box.text())
+        AddressServer = int(self.Address_box.text())
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
         sock.bind((str(self.IP_box.text()),

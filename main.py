@@ -13,8 +13,12 @@ update_mas = False
 system_update = False
 dark = 0
 custom_colors = {}
+
+
 class Example(QMainWindow):
-    global ip, Address, update_mas
+    global ip, AddressServer, update_mas
+
+
 
     class SettingWindowMenu(QWidget):
         def __init__(self):
@@ -154,6 +158,8 @@ class Example(QMainWindow):
             primary = self.primary.text()
             input_background = self.input_background.text()
             input_button_hover_background = self.inputButton_hoverBackground.text()
+
+            self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
             custom_colors = {"background": f"{background}",
                              "border": f"{border}",
                              "foreground": f"{foreground}",
@@ -174,7 +180,7 @@ class Example(QMainWindow):
                 self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
 
         def now_ip(self):
-            global ip, Address, update_mas
+            global ip, AddressServer, update_mas
             try:
                 ip = str(self.interlocutor_ip.text())
                 Address = int(self.interlocutor_adress.text())
@@ -341,7 +347,7 @@ class Example(QMainWindow):
             self.sms_text_9.resize(self.sms_text_9.sizeHint())
 
     def update_message(self):
-        global update_mas, ip, Address, error, dark, custom_colors
+        global update_mas, ip, AddressServer, error, dark, custom_colors
         if dark == 2:
             self.setStyleSheet(qdarktheme.load_stylesheet())
         if dark == 1:
@@ -437,7 +443,7 @@ class Example(QMainWindow):
             self.on = True
 
     def count(self):
-        global ip, Address
+        global ip, AddressServer
         self.login = self.textBox1.text()
         password = self.textBox2.text()
         if ip == '':
