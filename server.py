@@ -23,8 +23,6 @@ class Example(QMainWindow):
         self.old_pos = None
         self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
 
-        self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={'foreground>input.placeholder': '#D0BCFF',
-                                                                     "primary": "#D0BCFF", 'border': '#202124'}))
 
     def initUI(self):
         self.setGeometry(300, 300, 150, 150)
@@ -122,8 +120,6 @@ def server_windows():
                 data, addres = sock.recvfrom(1024)
                 text_utf = data.decode('utf-8')
                 print("\033[40m\033[1m\033[37m", addres[0], addres[1], '\n', text_utf, '\n')
-                print(client)  # список [[ip id]]
-                print(data)  # текст отправителя
 
                 if addres not in client:
                     client.append(addres)  # Если такого клиента нету , то добавить
@@ -141,6 +137,9 @@ def server_windows():
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = Example()
+    window.setObjectName("MainWindow")
+    window.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={'foreground>input.placeholder': '#D0BCFF',
+                                                                    "primary": "#D0BCFF", 'border': '#202124'}))
     window.show()
     app.exec()
     app_icon = QtGui.QIcon()
