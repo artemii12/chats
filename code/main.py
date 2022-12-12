@@ -339,16 +339,20 @@ class main:
                 sys.exit()
 
         def read_sok(self):
-            while self.exit:
+            while not self.exit:
+                print(78)
                 try:
+                    print(1)
                     data = self.sor.recv(1024)
                     self.text_utf = data.decode('utf-8')
+                    print(self.text_utf)
+                    self.chats.append(self.text_utf)
+                    del self.chats[0]
 
                 except ConnectionResetError:
                     self.text_utf = 'Удаленный хост принудительно разорвал существующее подключение'
-
-                self.chats.append(self.text_utf)
-                del self.chats[0]
+                    self.chats.append(self.text_utf)
+                    del self.chats[0]
                 self.sms_text_1.setText(f'{self.chats[0]}')
                 self.sms_text_1.resize(self.sms_text_1.sizeHint())
                 self.sms_text_2.setText(f'{self.chats[1]}')
@@ -379,6 +383,7 @@ class main:
                 system_update = False
 
             self.text = self.textBox3.text()
+            print(self.chats)
             if ip == '':
                 self.chats.append('ip and address were not added to the settings')
                 del self.chats[0]
@@ -388,24 +393,21 @@ class main:
                         self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
                                         self.server)  # Уведомляем сервер о подключении
                     except:
+                        print(98)
                         self.server = ip, Address
-                        self.chats.append(f'Не верно введен ip|adress {self.server[0], self.server[1]}')
+                        self.chats.append(f'Не верно введен ip|adress {self.server[0], self.server[1]}2')
                         del self.chats[0]
+                    self.potok = threading.Thread(target=self.read_sok)
+                    self.potok.start()
                     self.chats.append(f'the ip address is not verified: {ip}:{Address}')
                     del self.chats[0]
-
+                # отправка сообщений
+                print(self.chats)
                 self.sor.sendto(('[' + self.login + ']' + self.text).encode('utf-8'), self.server)
-                self.potok = threading.Thread(target=self.read_sok)
-                self.potok.start()
-                if self.control:
-                    data = self.sor.recv(1024)
-                    self.text_utf = data.decode('utf-8')
-                    self.chats.append(f'{self.text_utf}')
-                    del self.chats[0]
-                    self.control = False
                 update_mas = False
             self.chats.append(f'[{self.login}]-{self.text}')
             del self.chats[0]
+            print(self.chats)
             self.sms_text_1.setText(f'{self.chats[0]}')
             self.sms_text_1.resize(self.sms_text_1.sizeHint())
             self.sms_text_2.setText(f'{self.chats[1]}')
