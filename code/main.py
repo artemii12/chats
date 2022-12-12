@@ -14,6 +14,7 @@ system_update = False
 dark = 0
 custom_colors = {}
 update_ip = False
+
 class main:
     class Example(QMainWindow):
         global ip, Address, update_mas, update_ip
@@ -247,7 +248,7 @@ class main:
         def init_ui(self):
             self.setGeometry(1000, 650, 450, 0)
             self.setWindowTitle('UNKNOWN INCOMING')
-            self.setWindowIcon(QtGui.QIcon('cff.jpg'))
+            self.setWindowIcon(QtGui.QIcon('../img/icon.jpg'))
             self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
 
             self.btn_registration = QPushButton(' registration', self)
@@ -543,6 +544,6 @@ if __name__ == '__main__':
     window = main.Example()
     window.show()
     app_icon = QtGui.QIcon()
-    app_icon.addFile('cff.jpg', QtCore.QSize(16, 16))
+    app_icon.addFile('icon.jpg', QtCore.QSize(16, 16))
     app.setWindowIcon(app_icon)
     app.exec()

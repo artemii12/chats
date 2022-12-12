@@ -143,6 +143,6 @@ if __name__ == '__main__':
     window.show()
     app.exec()
     app_icon = QtGui.QIcon()
-    app_icon.addFile('cff.jpg', QtCore.QSize(16, 16))
+    app_icon.addFile('icon.jpg', QtCore.QSize(16, 16))
     app.setWindowIcon(app_icon)
 
