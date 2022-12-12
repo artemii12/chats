@@ -245,6 +245,10 @@ class main:
             delta = event.pos() - self.old_pos
             self.move(self.pos() + delta)
 
+        def keyPressEvent(self, event):
+            if event.key() == QtCore.Qt.Key.Key_Enter:
+                self.update_message()
+
         def init_ui(self):
             self.setGeometry(1000, 650, 450, 0)
             self.setWindowTitle('UNKNOWN INCOMING')
@@ -340,12 +344,9 @@ class main:
 
         def read_sok(self):
             while not self.exit:
-                print(78)
                 try:
-                    print(1)
                     data = self.sor.recv(1024)
                     self.text_utf = data.decode('utf-8')
-                    print(self.text_utf)
                     self.chats.append(self.text_utf)
                     del self.chats[0]
 
@@ -383,7 +384,6 @@ class main:
                 system_update = False
 
             self.text = self.textBox3.text()
-            print(self.chats)
             if ip == '':
                 self.chats.append('ip and address were not added to the settings')
                 del self.chats[0]
@@ -393,7 +393,6 @@ class main:
                         self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
                                         self.server)  # Уведомляем сервер о подключении
                     except:
-                        print(98)
                         self.server = ip, Address
                         self.chats.append(f'Не верно введен ip|adress {self.server[0], self.server[1]}2')
                         del self.chats[0]
@@ -402,12 +401,10 @@ class main:
                     self.chats.append(f'the ip address is not verified: {ip}:{Address}')
                     del self.chats[0]
                 # отправка сообщений
-                print(self.chats)
                 self.sor.sendto(('[' + self.login + ']' + self.text).encode('utf-8'), self.server)
                 update_mas = False
             self.chats.append(f'[{self.login}]-{self.text}')
             del self.chats[0]
-            print(self.chats)
             self.sms_text_1.setText(f'{self.chats[0]}')
             self.sms_text_1.resize(self.sms_text_1.sizeHint())
             self.sms_text_2.setText(f'{self.chats[1]}')
