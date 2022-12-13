@@ -340,7 +340,7 @@ class main:
             self.exit = True
             if self.exit:
                 self.exit = False
-                sys.exit()
+                del main
 
         def read_sok(self):
             while not self.exit:

@@ -120,12 +120,13 @@ def server_windows():
                 data, addres = sock.recvfrom(1024)
                 text_utf = data.decode('utf-8')
                 print("\033[40m\033[1m\033[37m", addres[0], addres[1], '\n', text_utf, '\n')
-
-                if addres not in client:
-                    client.append(addres)  # Если такого клиента нету , то добавить
                 for clients in client:
-                    if clients == addres:
+                    if addres not in clients[0]:
                         sock.sendto(b'You have been joined to the server', clients)
+                        client.append([addres, False])  # Если такого клиента нету , то добавить
+                for clients in client:
+                    if clients == addres[0] and addres[1]:
+                        pass
                     else:
                         sock.sendto(data, clients)
             except ConnectionResetError:
