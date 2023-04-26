@@ -32,6 +32,7 @@ class main:
 
         class SettingWindowMenu(QWidget):
             global ip, Address, update_mas, update_ip
+
             def __init__(self):
                 super().__init__()
                 self.update()
@@ -214,7 +215,6 @@ class main:
                 except:
                     self.encode.setText("3")
 
-
         def __init__(self):
             global dark, timer
             super().__init__()
@@ -306,15 +306,8 @@ class main:
             self.btn_enter_registr.resize(self.btn_enter_registr.sizeHint())
             self.btn_enter_registr.move(180, 110)
             self.btn_enter_registr.clicked.connect(self.check)
-
-            self.sms_text_1 = QLabel(self)
-            self.sms_text_2 = QLabel(self)
-            self.sms_text_4 = QLabel(self)
-            self.sms_text_5 = QLabel(self)
-            self.sms_text_6 = QLabel(self)
-            self.sms_text_7 = QLabel(self)
-            self.sms_text_8 = QLabel(self)
-            self.sms_text_9 = QLabel(self)
+            for i in range(1, 9):
+                exec(f'self.sms_text_{i} = QLabel(self)')
 
             self.textBox3 = QLineEdit(self)
             self.textBox3.setVisible(False)
@@ -381,24 +374,9 @@ class main:
                     self.text_utf = 'Удаленный хост принудительно разорвал существующее подключение'
                     self.chats.append(self.text_utf)
                     del self.chats[0]
-                self.sms_text_1.setText(f'{self.chats[0]}')
-                self.sms_text_1.resize(self.sms_text_1.sizeHint())
-                self.sms_text_2.setText(f'{self.chats[1]}')
-                self.sms_text_2.resize(self.sms_text_2.sizeHint())
-                self.sms_text_4.setText(f'{self.chats[2]}')
-                self.sms_text_4.resize(self.sms_text_4.sizeHint())
-                self.sms_text_5.setText(f'{self.chats[3]}')
-                self.sms_text_5.resize(self.sms_text_5.sizeHint())
-                self.sms_text_6.setText(f'{self.chats[4]}')
-                self.sms_text_6.resize(self.sms_text_6.sizeHint())
-
-                self.sms_text_7.setText(f'{self.chats[5]}')
-                self.sms_text_7.resize(self.sms_text_7.sizeHint())
-                self.sms_text_8.setText(f'{self.chats[6]}')
-                self.sms_text_8.resize(self.sms_text_8.sizeHint())
-                self.sms_text_9.setText(f'{self.chats[7]}')
-                self.sms_text_9.resize(self.sms_text_9.sizeHint())
-
+                for i in range(1, 9):
+                    exec(f'self.sms_text_{i}.setText(f"{self.chats[i - 1]}")')
+                    exec(f'self.sms_text_{i}.resize(self.sms_text_{i}.sizeHint())')
         def update_message(self):
             global update_mas, ip, Address, error, dark, custom_colors, system_update, update_ip
             if dark == 2:
@@ -432,22 +410,9 @@ class main:
                 update_mas = False
             self.chats.append(f'[{self.login}]-{self.text}')
             del self.chats[0]
-            self.sms_text_1.setText(f'{self.chats[0]}')
-            self.sms_text_1.resize(self.sms_text_1.sizeHint())
-            self.sms_text_2.setText(f'{self.chats[1]}')
-            self.sms_text_2.resize(self.sms_text_2.sizeHint())
-            self.sms_text_4.setText(f'{self.chats[2]}')
-            self.sms_text_4.resize(self.sms_text_4.sizeHint())
-            self.sms_text_5.setText(f'{self.chats[3]}')
-            self.sms_text_5.resize(self.sms_text_5.sizeHint())
-            self.sms_text_6.setText(f'{self.chats[4]}')
-            self.sms_text_6.resize(self.sms_text_6.sizeHint())
-            self.sms_text_7.setText(f'{self.chats[5]}')
-            self.sms_text_7.resize(self.sms_text_7.sizeHint())
-            self.sms_text_8.setText(f'{self.chats[6]}')
-            self.sms_text_8.resize(self.sms_text_8.sizeHint())
-            self.sms_text_9.setText(f'{self.chats[7]}')
-            self.sms_text_9.resize(self.sms_text_9.sizeHint())
+            for i in range(1, 9):
+                exec(f'self.sms_text_{i}.setText(f"{self.chats[i - 1]}")')
+                exec(f'self.sms_text_{i}.resize(self.sms_text_{i}.sizeHint())')
             self.textBox3.setText('')
 
         def check(self):
@@ -520,38 +485,13 @@ class main:
                         self.textBox2.setVisible(False)
                         self.btn_enter_registr.setVisible(False)
                         self.setWindowTitle('CHAT')
-
-                        self.sms_text_1.setText(f'{self.chats[4]}')
-                        self.sms_text_1.resize(self.sms_text_1.sizeHint())
-                        self.sms_text_1.move(0, 0)
-
-                        self.sms_text_2.setText(f'{self.chats[0]}')
-                        self.sms_text_2.resize(self.sms_text_2.sizeHint())
-                        self.sms_text_2.move(0, 15)
-
-                        self.sms_text_4.setText(f'{self.chats[1]}')
-                        self.sms_text_4.resize(self.sms_text_4.sizeHint())
-                        self.sms_text_4.move(0, 30)
-
-                        self.sms_text_5.setText(f'{self.chats[2]}')
-                        self.sms_text_5.resize(self.sms_text_5.sizeHint())
-                        self.sms_text_5.move(0, 45)
-
-                        self.sms_text_6.setText(f'{self.chats[3]}')
-                        self.sms_text_6.resize(self.sms_text_6.sizeHint())
-                        self.sms_text_6.move(0, 60)
-
-                        self.sms_text_7.setText(f'{self.chats[5]}')
-                        self.sms_text_7.resize(self.sms_text_6.sizeHint())
-                        self.sms_text_7.move(0, 75)
-
-                        self.sms_text_8.setText(f'{self.chats[6]}')
-                        self.sms_text_8.resize(self.sms_text_6.sizeHint())
-                        self.sms_text_8.move(0, 90)
-
-                        self.sms_text_9.setText(f'{self.chats[7]}')
-                        self.sms_text_9.resize(self.sms_text_6.sizeHint())
-                        self.sms_text_9.move(0, 105)
+                        for i in range(1, 9):
+                            exec(f'self.sms_text_{i}.setText(f"{self.chats[0]}")')
+                            exec(f'self.sms_text_{i}.resize(self.sms_text_{i}.sizeHint())')
+                            if i == 1:
+                                exec(f'self.sms_text_{i}.move(0, 0)')
+                            else:
+                                exec(f'self.sms_text_{i}.move(0, 15*({i}-1))')
 
                         self.sending_sms.resize(self.btn_enter_registr.sizeHint())
                         self.sending_sms.resize(25, 25)
@@ -572,7 +512,6 @@ class main:
                         self.btn_exit.resize(50, 25)
                         self.btn_exit.setVisible(True)
                         self.btn_registration.setVisible(False)
-
 
 
 if __name__ == '__main__':
