@@ -268,13 +268,12 @@ class main:
             self.move(self.pos() + delta)
 
         def keyPressEvent(self, event):
-            if event.key() == QtCore.Qt.Key.Key_Enter:
+            if event.key() == QtCore.Qt.Key.Key_Return:
                 self.update_message()
 
         def init_ui(self):
             self.setGeometry(1000, 650, 450, 0)
             self.setWindowTitle('UNKNOWN INCOMING')
-            self.setWindowIcon(QtGui.QIcon('../img/icon.jpg'))
             self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
 
             self.btn_registration = QPushButton(' registration', self)
@@ -288,29 +287,33 @@ class main:
             self.text_LOGIN.resize(self.text_LOGIN.sizeHint())
             self.text_LOGIN.move(197, 10)
 
-            self.textBox1 = QLineEdit(self)
-            self.textBox1.resize(150, 20)
-            self.textBox1.move(143, 35)
+
 
             self.text_PASSWORD = QLabel(self)
             self.text_PASSWORD.setText('PASSWORD  ')
             self.text_PASSWORD.resize(self.text_PASSWORD.sizeHint())
             self.text_PASSWORD.move(185, 60)
 
+            self.textBox1 = QLineEdit(self)
+            self.textBox1.resize(150, 20)
+            self.textBox1.move(143, 35)
+
             self.textBox2 = QLineEdit(self)
             self.textBox2.resize(150, 20)
             self.textBox2.move(143, 85)
             self.textBox2.setEchoMode(QLineEdit.EchoMode.Password)
 
+            self.textBox3 = QLineEdit(self)
+            self.textBox3.setVisible(False)
+
             self.btn_enter_registr = QPushButton('ENTER', self)
             self.btn_enter_registr.resize(self.btn_enter_registr.sizeHint())
             self.btn_enter_registr.move(180, 110)
             self.btn_enter_registr.clicked.connect(self.check)
+
             for i in range(1, 9):
                 exec(f'self.sms_text_{i} = QLabel(self)')
 
-            self.textBox3 = QLineEdit(self)
-            self.textBox3.setVisible(False)
 
             self.btn_exit = QPushButton('EXIT', self)
             self.btn_exit.setVisible(False)
@@ -518,7 +521,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = main.Example()
     window.show()
-    app_icon = QtGui.QIcon()
-    app_icon.addFile('icon.jpg', QtCore.QSize(16, 16))
-    app.setWindowIcon(app_icon)
     app.exec()
