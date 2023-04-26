@@ -6,7 +6,7 @@ import threading
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, \
     QLabel, QLineEdit, QWidget, QCheckBox
 from PyQt6 import QtGui, QtCore
-
+import sqlite3
 ip = ''
 Address = 0
 update_mas = False
@@ -14,8 +14,6 @@ system_update = False
 dark = 0
 custom_colors = {}
 update_ip = False
-enter_on = False
-
 
 class main:
     class Example(QMainWindow):
@@ -23,7 +21,6 @@ class main:
 
         class SettingWindowMenu(QWidget):
             global ip, Address, update_mas, update_ip
-
             def __init__(self):
                 super().__init__()
                 self.update()
@@ -249,10 +246,8 @@ class main:
             self.move(self.pos() + delta)
 
         def keyPressEvent(self, event):
-            global enter_on
-            if event.key() == QtCore.Qt.Key.Key_Return:
-                if enter_on:
-                    self.update_message()
+            if event.key() == QtCore.Qt.Key.Key_Enter:
+                self.update_message()
 
         def init_ui(self):
             self.setGeometry(1000, 650, 450, 0)
@@ -298,11 +293,6 @@ class main:
             self.sms_text_7 = QLabel(self)
             self.sms_text_8 = QLabel(self)
             self.sms_text_9 = QLabel(self)
-
-            self.label = QLabel(self)
-            self.pixmap = QtGui.QPixmap('..\\img\\icon.jpg')
-            self.pixmap = self.pixmap.scaledToHeight(10)
-            self.label.setPixmap(self.pixmap)
 
             self.textBox3 = QLineEdit(self)
             self.textBox3.setVisible(False)
@@ -354,19 +344,16 @@ class main:
 
         def read_sok(self):
             while not self.exit:
-                print(1)
                 try:
                     data = self.sor.recv(1024)
                     self.text_utf = data.decode('utf-8')
                     self.chats.append(self.text_utf)
                     del self.chats[0]
-                    print(3)
+
                 except ConnectionResetError:
                     self.text_utf = 'Удаленный хост принудительно разорвал существующее подключение'
                     self.chats.append(self.text_utf)
                     del self.chats[0]
-                    print(2)
-
                 self.sms_text_1.setText(f'{self.chats[0]}')
                 self.sms_text_1.resize(self.sms_text_1.sizeHint())
                 self.sms_text_2.setText(f'{self.chats[1]}')
@@ -386,7 +373,7 @@ class main:
                 self.sms_text_9.resize(self.sms_text_9.sizeHint())
 
         def update_message(self):
-            global update_mas, ip, Address, error, dark, custom_colors, system_update, update_ip, chat_save
+            global update_mas, ip, Address, error, dark, custom_colors, system_update, update_ip
             if dark == 2:
                 self.setStyleSheet(qdarktheme.load_stylesheet())
             if dark == 1:
@@ -395,6 +382,7 @@ class main:
                 self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
                 dark = 3
                 system_update = False
+
             self.text = self.textBox3.text()
             if ip == '':
                 self.chats.append('ip and address were not added to the settings')
@@ -442,12 +430,19 @@ class main:
                 self.count()
 
         def add_account(self):
+            conn = sqlite3.connect('system_data.db')
+            c = conn.cursor()
             login = self.textBox1.text()
             password = self.textBox2.text()
-            self.password[login] = password
+            c.execute("INSERT INTO data (name, password) VALUES(?, ?)",
+                      (login, password))
             self.textBox1.setText('you are registered')
             self.textBox2.setText('')
+            conn.commit()
+            c.close()
+            conn.close()
             self.registration()
+
 
         def registration(self):
             self.text_LOGIN.setText('LOGIN  ')
@@ -474,7 +469,7 @@ class main:
                 self.on = True
 
         def count(self):
-            global ip, Address, enter_on
+            global ip, Address
             self.login = self.textBox1.text()
             password = self.textBox2.text()
             if ip == '':
@@ -487,69 +482,79 @@ class main:
 
                 self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
                                 self.server)  # Уведомляем сервер о подключении
-            for i in self.password.keys():
-                if self.login in i:
-                    if password == self.password[i]:
-                        enter_on = True
-                        self.text_LOGIN.setVisible(False)
-                        self.textBox1.setVisible(False)
-                        self.text_PASSWORD.setVisible(False)
-                        self.textBox2.setVisible(False)
-                        self.btn_enter_registr.setVisible(False)
-                        self.setWindowTitle('CHAT')
+            conn = sqlite3.connect('system_data.db')
+            c = conn.cursor()
+            sd = c.execute("""SELECT name from data """).fetchall()
+            sdrect = []
+            for i in sd:
+                sdrect.append(i[0])
+            if self.login in sdrect:
+                conn = sqlite3.connect('system_data.db')
+                c = conn.cursor()
+                ps = (c.execute(f"""SELECT password from data 
+                                        where name like ({self.login}) """).fetchall())[0][0]
+                print(ps)
+                if password == ps:
+                    self.text_LOGIN.setVisible(False)
+                    self.textBox1.setVisible(False)
+                    self.text_PASSWORD.setVisible(False)
+                    self.textBox2.setVisible(False)
+                    self.btn_enter_registr.setVisible(False)
+                    self.setWindowTitle('CHAT')
 
-                        self.sms_text_1.setText(f'{self.chats[4]}')
-                        self.sms_text_1.resize(self.sms_text_1.sizeHint())
-                        self.sms_text_1.move(0, 0)
+                    self.sms_text_1.setText(f'{self.chats[4]}')
+                    self.sms_text_1.resize(self.sms_text_1.sizeHint())
+                    self.sms_text_1.move(0, 0)
 
-                        self.sms_text_2.setText(f'{self.chats[0]}')
-                        self.sms_text_2.resize(self.sms_text_2.sizeHint())
-                        self.sms_text_2.move(0, 15)
+                    self.sms_text_2.setText(f'{self.chats[0]}')
+                    self.sms_text_2.resize(self.sms_text_2.sizeHint())
+                    self.sms_text_2.move(0, 15)
 
-                        self.sms_text_4.setText(f'{self.chats[1]}')
-                        self.sms_text_4.resize(self.sms_text_4.sizeHint())
-                        self.sms_text_4.move(0, 30)
+                    self.sms_text_4.setText(f'{self.chats[1]}')
+                    self.sms_text_4.resize(self.sms_text_4.sizeHint())
+                    self.sms_text_4.move(0, 30)
 
-                        self.sms_text_5.setText(f'{self.chats[2]}')
-                        self.sms_text_5.resize(self.sms_text_5.sizeHint())
-                        self.sms_text_5.move(0, 45)
+                    self.sms_text_5.setText(f'{self.chats[2]}')
+                    self.sms_text_5.resize(self.sms_text_5.sizeHint())
+                    self.sms_text_5.move(0, 45)
 
-                        self.sms_text_6.setText(f'{self.chats[3]}')
-                        self.sms_text_6.resize(self.sms_text_6.sizeHint())
-                        self.sms_text_6.move(0, 60)
+                    self.sms_text_6.setText(f'{self.chats[3]}')
+                    self.sms_text_6.resize(self.sms_text_6.sizeHint())
+                    self.sms_text_6.move(0, 60)
 
-                        self.sms_text_7.setText(f'{self.chats[5]}')
-                        self.sms_text_7.resize(self.sms_text_6.sizeHint())
-                        self.sms_text_7.move(0, 75)
+                    self.sms_text_7.setText(f'{self.chats[5]}')
+                    self.sms_text_7.resize(self.sms_text_6.sizeHint())
+                    self.sms_text_7.move(0, 75)
 
-                        self.sms_text_8.setText(f'{self.chats[6]}')
-                        self.sms_text_8.resize(self.sms_text_6.sizeHint())
-                        self.sms_text_8.move(0, 90)
+                    self.sms_text_8.setText(f'{self.chats[6]}')
+                    self.sms_text_8.resize(self.sms_text_6.sizeHint())
+                    self.sms_text_8.move(0, 90)
 
-                        self.sms_text_9.setText(f'{self.chats[7]}')
-                        self.sms_text_9.resize(self.sms_text_6.sizeHint())
-                        self.sms_text_9.move(0, 105)
+                    self.sms_text_9.setText(f'{self.chats[7]}')
+                    self.sms_text_9.resize(self.sms_text_6.sizeHint())
+                    self.sms_text_9.move(0, 105)
 
-                        self.sending_sms.resize(self.btn_enter_registr.sizeHint())
-                        self.sending_sms.resize(25, 25)
-                        self.sending_sms.move(425, 125)
-                        self.sending_sms.setVisible(True)
+                    self.sending_sms.resize(self.btn_enter_registr.sizeHint())
+                    self.sending_sms.resize(25, 25)
+                    self.sending_sms.move(425, 125)
+                    self.sending_sms.setVisible(True)
 
-                        self.textBox3.resize(425, 20)
-                        self.textBox3.move(0, 125)
-                        self.textBox3.setVisible(True)
+                    self.textBox3.resize(425, 20)
+                    self.textBox3.move(0, 125)
+                    self.textBox3.setVisible(True)
 
-                        self.btn_settings.resize(self.btn_exit.sizeHint())
-                        self.btn_settings.move(350, 0)
-                        self.btn_settings.resize(100, 25)
-                        self.btn_settings.setVisible(True)
+                    self.btn_settings.resize(self.btn_exit.sizeHint())
+                    self.btn_settings.move(350, 0)
+                    self.btn_settings.resize(100, 25)
+                    self.btn_settings.setVisible(True)
 
-                        self.btn_exit.resize(self.btn_exit.sizeHint())
-                        self.btn_exit.move(400, 25)
-                        self.btn_exit.resize(50, 25)
-                        self.btn_exit.setVisible(True)
-                        self.btn_registration.setVisible(False)
-
+                    self.btn_exit.resize(self.btn_exit.sizeHint())
+                    self.btn_exit.move(400, 25)
+                    self.btn_exit.resize(50, 25)
+                    self.btn_exit.setVisible(True)
+                    self.btn_registration.setVisible(False)
+            c.close()
+            conn.close()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

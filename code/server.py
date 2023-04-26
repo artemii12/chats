@@ -1,5 +1,6 @@
 import socket
 import sys
+
 import threading
 import qdarktheme
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, \
@@ -54,7 +55,6 @@ class Example(QMainWindow):
         self.Address_box = QLineEdit(self)
         self.Address_box.resize(100, 20)
         self.Address_box.move(50, 25)
-
 
         self.Exit_menu = QPushButton('exit from settings', self)
         self.Exit_menu.resize(150, 20)
@@ -119,16 +119,16 @@ def server_windows():
             try:
                 data, addres = sock.recvfrom(1024)
                 text_utf = data.decode('utf-8')
-                print("\033[40m\033[1m\033[37m", addres[0], addres[1], '\n', text_utf, '\n')
+                print("\033[40m\033[1m\033[37m", addres, addres, '\n', text_utf, '\n')
+
+                if addres not in client:
+                    client.append(addres)
+
                 for clients in client:
-                    if addres not in clients[0]:
-                        sock.sendto(b'You have been joined to the server', clients)
-                        client.append([addres, False])  # Если такого клиента нету , то добавить
-                for clients in client:
-                    if clients == addres[0] and addres[1]:
+                    if addres == clients:
                         pass
-                    else:
-                        sock.sendto(data, clients)
+                        #  sock.sendto(b'You have been joined to the server', clients)
+                    sock.sendto(data, clients)
             except ConnectionResetError:
                 data, addres = sock.recvfrom(1024)
                 print(
