@@ -78,7 +78,7 @@ class instance(QMainWindow):
             self.reply.setWindowFlag(QtCore.Qt.WindowType.FramelessWindowHint)
 
             self.reply.move(self.geometry().x(), self.geometry().y()-100)
-            self.reply.setText("Вы уверены что хотите сменить ipadress")
+            self.reply.setText("Вы уверены что хотите сменить ipaddress")
             self.reply.setStandardButtons(QMessageBox.StandardButton.Yes |
                                      QMessageBox.StandardButton.No)
             self.reply.setIcon(QMessageBox.Icon.Question)
@@ -324,7 +324,7 @@ class instance(QMainWindow):
             self.count()
 
     def add_account(self):
-        conn = sqlite3.connect('../system_data.db')
+        conn = sqlite3.connect('system_data.db')
         c = conn.cursor()
         login = self.textBox1.text()
         password = self.textBox2.text()
@@ -368,7 +368,7 @@ class instance(QMainWindow):
     def count(self):
         global ip, Address
         self.login = self.textBox1.text()
-        password = self.textBox2.text()
+        self.password = self.textBox2.text()
         if ip == '':
             self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.sor.bind(('', 0))  # Задаем сокет как клиент
@@ -379,12 +379,15 @@ class instance(QMainWindow):
 
             self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
                             self.server)  # Уведомляем сервер о подключении
-        for i in self.password.keys():
-            print(i)
-            if self.login in i:
-                print(self.login)
-                print(32)
-                if password == self.password[i]:
+
+        sql = sqlite3.connect('system_data.db')
+        cursor = sql.cursor()
+        sqlite_select_query = """SELECT * from data"""
+        cursor.execute(sqlite_select_query)
+        records = cursor.fetchall()
+        for name, password in records:
+            if str(self.login) == str(name):
+                if str(self.password) == str(password):
                     print(65)
                     self.text_LOGIN.setVisible(False)
                     self.textBox1.setVisible(False)
