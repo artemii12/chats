@@ -128,7 +128,8 @@ def server_windows():
                     if addres == clients:
                         pass
                         #  sock.sendto(b'You have been joined to the server', clients)
-                    sock.sendto(data, clients)
+                    else:
+                        sock.sendto(data, clients)
             except ConnectionResetError:
                 data, addres = sock.recvfrom(1024)
                 print(

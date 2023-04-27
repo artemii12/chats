@@ -1,9 +1,15 @@
 import sys
 from PyQt6.QtWidgets import QApplication
-from main import main
+from main import instance
+
+
+def exept_hook(cls, exeption, traceback):
+    sys.__excepthook__(cls, exeption, traceback)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = main.instance()
+    window = instance()
     window.show()
-    app.exec()
+    sys.excepthook = exept_hook
+    sys.exit(app.exec())
