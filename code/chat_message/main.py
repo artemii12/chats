@@ -3,14 +3,14 @@ import qdarktheme
 import socket
 import threading
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, \
-    QLabel, QLineEdit, QWidget, QCheckBox
+    QLabel, QLineEdit, QWidget, QCheckBox, QMessageBox
 from PyQt6 import QtGui, QtCore
 import sqlite3
 from encoding import encode_, decode, decode_, ALPHA
-from variables import ip, Address, update_mas, system_update, dark, custom_colors, update_ip
+from variables import ip, Address, update_mas, system_update, dark, custom_colors, update_ip, exit_
 from creating_objects import updating_settings
-
-
+from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtGui import QAction, QIcon
 class instance(QMainWindow):
     global ip, Address, update_mas, update_ip
 
@@ -71,16 +71,28 @@ class instance(QMainWindow):
                 dark = 2
                 self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
 
-        def now_ip(self):
+        def now_ip(self, s):
             global ip, Address, update_mas, update_ip
-            try:
-                ip = str(self.interlocutor_ip.text())
-                Address = int(self.interlocutor_adress.text())
-                update_ip = True
-                update_mas = True
-            except ValueError:
-                self.interlocutor_ip.setText("interlocutor ip")
-                self.interlocutor_adress.setText("Address")
+
+            self.reply = QMessageBox(self)
+            self.reply.setWindowFlag(QtCore.Qt.WindowType.FramelessWindowHint)
+
+            self.reply.move(self.geometry().x(), self.geometry().y()-100)
+            self.reply.setText("Вы уверены что хотите сменить ipadress")
+            self.reply.setStandardButtons(QMessageBox.StandardButton.Yes |
+                                     QMessageBox.StandardButton.No)
+            self.reply.setIcon(QMessageBox.Icon.Question)
+            x = self.reply.exec()
+
+            if x == QMessageBox.StandardButton.Yes:
+                try:
+                    ip = str(self.interlocutor_ip.text())
+                    Address = int(self.interlocutor_adress.text())
+                    update_ip = True
+                    update_mas = True
+                except ValueError:
+                    self.interlocutor_ip.setText("interlocutor ip")
+                    self.interlocutor_adress.setText("Address")
 
         def exit_menu(self):
             global decode
@@ -146,37 +158,35 @@ class instance(QMainWindow):
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key.Key_Return:
             self.update_message()
+    def test1(self):
+        print(453)
 
     def init_ui(self):
-        self.setGeometry(1000, 650, 450, 0)
+        self.setGeometry(1000, 650, 450, 200)
         self.setWindowTitle('UNKNOWN INCOMING')
         self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
 
-        self.btn_registration = QPushButton(' registration', self)
-        self.btn_registration.resize(self.btn_registration.sizeHint())
-        self.btn_registration.move(375, 0)
-        self.btn_registration.resize(75, 25)
-        self.btn_registration.clicked.connect(self.registration)
+
 
         self.text_LOGIN = QLabel(self)
         self.text_LOGIN.setText('LOGIN  ')
         self.text_LOGIN.resize(self.text_LOGIN.sizeHint())
-        self.text_LOGIN.move(197, 10)
+        self.text_LOGIN.move(197, 40)
 
 
 
         self.text_PASSWORD = QLabel(self)
         self.text_PASSWORD.setText('PASSWORD  ')
         self.text_PASSWORD.resize(self.text_PASSWORD.sizeHint())
-        self.text_PASSWORD.move(185, 60)
+        self.text_PASSWORD.move(185, 90)
 
         self.textBox1 = QLineEdit(self)
         self.textBox1.resize(150, 20)
-        self.textBox1.move(143, 35)
+        self.textBox1.move(143, 65)
 
         self.textBox2 = QLineEdit(self)
         self.textBox2.resize(150, 20)
-        self.textBox2.move(143, 85)
+        self.textBox2.move(143, 115)
         self.textBox2.setEchoMode(QLineEdit.EchoMode.Password)
 
         self.textBox3 = QLineEdit(self)
@@ -184,25 +194,35 @@ class instance(QMainWindow):
 
         self.btn_enter_registr = QPushButton('ENTER', self)
         self.btn_enter_registr.resize(self.btn_enter_registr.sizeHint())
-        self.btn_enter_registr.move(180, 110)
+        self.btn_enter_registr.move(194, 145)
         self.btn_enter_registr.clicked.connect(self.check)
 
         for i in range(1, 9):
             exec(f'self.sms_text_{i} = QLabel(self)')
 
-
-        self.btn_exit = QPushButton('EXIT', self)
-        self.btn_exit.setVisible(False)
-        self.btn_exit.clicked.connect(self.sys_exit)
-
-        self.btn_settings = QPushButton('SETTINGS', self)
-        self.btn_settings.setVisible(False)
-        self.btn_settings.clicked.connect(self.settings_window)
-
         self.sending_sms = QPushButton('>', self)
         self.sending_sms.setVisible(False)
         self.sending_sms.clicked.connect(self.update_message)
         self.update_setting()
+
+        self.button_action1 = QAction("&регистрация", self)
+        self.button_action1.setStatusTip("This is your button")
+        self.button_action1.triggered.connect(self.registration)
+
+        self.button_action2 = QAction("&настройки", self)
+        self.button_action2.setStatusTip("This is your button")
+        self.button_action2.triggered.connect(self.settings_window)
+
+        self.button_action3 = QAction("&выход", self)
+        self.button_action3.setStatusTip("This is your button")
+        self.button_action3.triggered.connect(self.sys_exit)
+
+        self.menu = self.menuBar()
+
+        self.file_menu = self.menu.addMenu("&Меню")
+        self.file_menu.addAction(self.button_action1)
+        self.file_menu.addSeparator()
+
 
     def update_setting(self):
         global dark
@@ -231,12 +251,11 @@ class instance(QMainWindow):
                 dark = 3
 
     def sys_exit(self):
-        self.exit = True
         sys.exit()
 
     def read_sok(self):
         global decode
-        while not self.exit:
+        while exit_:
             print("activet")
             try:
                 data = self.sor.recv(1024)
@@ -322,24 +341,28 @@ class instance(QMainWindow):
         self.text_LOGIN.setText('LOGIN  ')
         self.text_PASSWORD.setText('PASSWORD  ')
         if self.on:
-            self.btn_registration.setText(' registration')
-            self.btn_enter_registr.setText("enter")
+            self.btn_enter_registr.setText("ENTER")
+            self.btn_enter_registr.resize(self.btn_enter_registr.sizeHint())
+            self.btn_enter_registr.move(194, 145)
             self.text_LOGIN.setText('LOGIN  ')
             self.text_LOGIN.resize(self.text_PASSWORD.sizeHint())
-            self.text_LOGIN.move(197, 10)
+            self.text_LOGIN.move(197, 40)
             self.text_PASSWORD.setText('PASSWORD  ')
             self.text_PASSWORD.resize(self.text_PASSWORD.sizeHint())
-            self.text_PASSWORD.move(185, 60)
+            self.text_PASSWORD.move(185, 90)
+            self.button_action1.setText("регистрация")
             self.on = False
         else:
-            self.btn_registration.setText('entrance')
-            self.btn_enter_registr.setText("register")
+            self.btn_enter_registr.setText("REGISTER")
+            self.btn_enter_registr.resize(self.btn_enter_registr.sizeHint())
+            self.btn_enter_registr.move(185, 145)
             self.text_LOGIN.setText('NEW NICKNAME')
             self.text_LOGIN.resize(self.text_LOGIN.sizeHint())
-            self.text_LOGIN.move(170, 10)
+            self.text_LOGIN.move(170, 40)
             self.text_PASSWORD.setText('NOW PASSWORD')
             self.text_PASSWORD.resize(self.text_PASSWORD.sizeHint())
-            self.text_PASSWORD.move(170, 60)
+            self.text_PASSWORD.move(170, 90)
+            self.button_action1.setText("вход")
             self.on = True
 
     def count(self):
@@ -368,31 +391,23 @@ class instance(QMainWindow):
                     self.text_PASSWORD.setVisible(False)
                     self.textBox2.setVisible(False)
                     self.btn_enter_registr.setVisible(False)
+                    self.button_action1.deleteLater()
+                    self.file_menu.addAction(self.button_action2)
+                    self.file_menu.addAction(self.button_action3)
                     self.setWindowTitle('CHAT')
                     for i in range(1, 9):
                         exec(f'self.sms_text_{i}.setText(f"{self.chats[0]}")')
                         exec(f'self.sms_text_{i}.resize(self.sms_text_{i}.sizeHint())')
                         if i == 1:
-                            exec(f'self.sms_text_{i}.move(0, 0)')
+                            exec(f'self.sms_text_{i}.move(0, 30)')
                         else:
-                            exec(f'self.sms_text_{i}.move(0, 15*({i}-1))')
+                            exec(f'self.sms_text_{i}.move( 0, (15*({i}-1))+30 )')
 
                     self.sending_sms.resize(self.btn_enter_registr.sizeHint())
                     self.sending_sms.resize(25, 25)
-                    self.sending_sms.move(425, 125)
+                    self.sending_sms.move(425, 170)
                     self.sending_sms.setVisible(True)
 
                     self.textBox3.resize(425, 20)
-                    self.textBox3.move(0, 125)
+                    self.textBox3.move(0, 170)
                     self.textBox3.setVisible(True)
-
-                    self.btn_settings.resize(self.btn_exit.sizeHint())
-                    self.btn_settings.move(350, 0)
-                    self.btn_settings.resize(100, 25)
-                    self.btn_settings.setVisible(True)
-
-                    self.btn_exit.resize(self.btn_exit.sizeHint())
-                    self.btn_exit.move(400, 25)
-                    self.btn_exit.resize(50, 25)
-                    self.btn_exit.setVisible(True)
-                    self.btn_registration.setVisible(False)
