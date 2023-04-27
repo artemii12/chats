@@ -205,23 +205,19 @@ class instance(QMainWindow):
         self.sending_sms.clicked.connect(self.update_message)
         self.update_setting()
 
-        self.button_action1 = QAction("&регистрация", self)
-        self.button_action1.setStatusTip("This is your button")
-        self.button_action1.triggered.connect(self.registration)
-
-        self.button_action2 = QAction("&настройки", self)
-        self.button_action2.setStatusTip("This is your button")
-        self.button_action2.triggered.connect(self.settings_window)
-
-        self.button_action3 = QAction("&выход", self)
-        self.button_action3.setStatusTip("This is your button")
-        self.button_action3.triggered.connect(self.sys_exit)
-
         self.menu = self.menuBar()
 
-        self.file_menu = self.menu.addMenu("&Меню")
-        self.file_menu.addAction(self.button_action1)
-        self.file_menu.addSeparator()
+        self.registers = QAction("&Регистрация", self)
+        self.registers.setStatusTip("This is your button")
+        self.registers.triggered.connect(self.registration)
+        self.menu.addAction(self.registers)
+
+
+        self.exit_gl_menu = QAction("Выход", self)
+        self.exit_gl_menu.setStatusTip("This is your button")
+        self.exit_gl_menu.triggered.connect(self.sys_exit)
+        self.menu.addAction(self.exit_gl_menu)
+
 
 
     def update_setting(self):
@@ -350,7 +346,7 @@ class instance(QMainWindow):
             self.text_PASSWORD.setText('PASSWORD  ')
             self.text_PASSWORD.resize(self.text_PASSWORD.sizeHint())
             self.text_PASSWORD.move(185, 90)
-            self.button_action1.setText("регистрация")
+            self.registers.setText("регистрация")
             self.on = False
         else:
             self.btn_enter_registr.setText("REGISTER")
@@ -362,7 +358,7 @@ class instance(QMainWindow):
             self.text_PASSWORD.setText('NOW PASSWORD')
             self.text_PASSWORD.resize(self.text_PASSWORD.sizeHint())
             self.text_PASSWORD.move(170, 90)
-            self.button_action1.setText("вход")
+            self.registers.setText("вход")
             self.on = True
 
     def count(self):
@@ -394,9 +390,21 @@ class instance(QMainWindow):
                     self.text_PASSWORD.setVisible(False)
                     self.textBox2.setVisible(False)
                     self.btn_enter_registr.setVisible(False)
-                    self.button_action1.deleteLater()
-                    self.file_menu.addAction(self.button_action2)
-                    self.file_menu.addAction(self.button_action3)
+
+                    self.registers.deleteLater()
+                    self.exit_gl_menu.deleteLater()
+
+                    self.settings = QAction("&Настройки", self)
+                    self.settings.setStatusTip("This is your button")
+                    self.settings.triggered.connect(self.settings_window)
+                    self.menu.addAction(self.settings)
+
+                    self.exit_gl_menu = QAction("Выход", self)
+                    self.exit_gl_menu.setStatusTip("This is your button")
+                    self.exit_gl_menu.triggered.connect(self.sys_exit)
+                    self.menu.addAction(self.exit_gl_menu)
+
+
                     self.setWindowTitle('CHAT')
                     for i in range(1, 9):
                         exec(f'self.sms_text_{i}.setText(f"{self.chats[0]}")')
