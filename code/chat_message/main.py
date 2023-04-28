@@ -101,8 +101,9 @@ class instance(QMainWindow):
                 decode = int(self.encode.text())
             except:
                 self.encode.setText("3")
-    class SettingWindowMenuipaddress(QWidget):
-        global ip, Address, update_mas, update_ip
+
+    class SettingWindowMenuColor(QWidget):
+        global update_mas, update_ip
 
         def __init__(self):
             super().__init__()
@@ -127,34 +128,10 @@ class instance(QMainWindow):
             self.move(self.pos() + delta)
 
         def update(self):
-            global decode
             self.setGeometry(1455, 650, 200, 250)
             self.setWindowTitle('UNKNOWN INCOMING')
             self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
             self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
-
-            self.btn_registration = QPushButton('updating the decoder', self)
-            self.btn_registration.resize(self.btn_registration.sizeHint())
-            self.btn_registration.move(0, 0)
-            self.btn_registration.resize(self.btn_registration.sizeHint())
-            self.btn_registration.clicked.connect(self.exit_menu)
-
-            self.interlocutor_ip = QLineEdit(self)
-            self.interlocutor_ip.setText("ip")
-            self.interlocutor_ip.resize(77, 20)
-            self.interlocutor_ip.move(0, 25)
-
-            self.interlocutor_adress = QLineEdit(self)
-            self.interlocutor_adress.setText("address")
-            self.interlocutor_adress.resize(50, 20)
-            self.interlocutor_adress.move(80, 25)
-
-            self.btn_now_ip = QPushButton('->', self)
-            self.btn_now_ip.clicked.connect(self.now_ip)
-            self.btn_now_ip.resize(self.btn_now_ip.sizeHint())
-            self.btn_now_ip.resize(24, 24)
-            self.btn_now_ip.move(131, 25)
-            self.btn_now_ip.setVisible(True)
 
             self.checkbox = QCheckBox("white theme", self)
             self.checkbox.move(0, 50)
@@ -234,10 +211,6 @@ class instance(QMainWindow):
             self.text_foreground.resize(self.text_foreground.sizeHint())
             self.text_foreground.move(0, 225)
 
-            self.encode = QLineEdit(self)
-            self.encode.setText(str(decode))
-            self.encode.resize(70, 25)
-            self.encode.move(130, 0)
 
         def update_colors(self):
             global custom_colors, dark, system_update
@@ -268,6 +241,71 @@ class instance(QMainWindow):
                 dark = 2
                 self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
 
+
+
+    class SettingWindowMenuipaddress(QWidget):
+        global ip, Address, update_mas, update_ip
+
+        def __init__(self):
+            super().__init__()
+            self.update()
+            self.old_pos = None
+
+        # вызывается при нажатии кнопки мыши
+        def mousePressEvent(self, event):
+            if event.button() == QtCore.Qt.MouseButton.LeftButton:
+                self.old_pos = event.pos()
+
+        # вызывается при отпускании кнопки мыши
+        def mouseReleaseEvent(self, event):
+            if event.button() == QtCore.Qt.MouseButton.LeftButton:
+                self.old_pos = None
+
+        # вызывается всякий раз, когда мышь перемещается
+        def mouseMoveEvent(self, event):
+            if not self.old_pos:
+                return
+            delta = event.pos() - self.old_pos
+            self.move(self.pos() + delta)
+
+        def update(self):
+            global decode
+            self.setGeometry(1455, 650, 200, 100)
+            self.setWindowTitle('UNKNOWN INCOMING')
+            self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
+            self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
+
+            self.interlocutor_ip = QLineEdit(self)
+            self.interlocutor_ip.setText("ip")
+            self.interlocutor_ip.resize(75, 24)
+            self.interlocutor_ip.move(25, 25)
+
+            self.interlocutor_adress = QLineEdit(self)
+            self.interlocutor_adress.setText("address")
+            self.interlocutor_adress.resize(75, 24)
+            self.interlocutor_adress.move(100, 25)
+
+            self.btn_now_ip = QPushButton('apply', self)
+            self.btn_now_ip.clicked.connect(self.now_ip)
+            self.btn_now_ip.resize(self.btn_now_ip.sizeHint())
+            self.btn_now_ip.resize(75, 24)
+            self.btn_now_ip.move(100, 50)
+            self.btn_now_ip.setVisible(True)
+
+            self.exit = QPushButton('exit', self)
+            self.exit.clicked.connect(self.yes_no)
+            self.exit.resize(self.exit.sizeHint())
+            self.exit.resize(75, 24)
+            self.exit.move(25, 50)
+            self.exit.setVisible(True)
+
+
+
+
+        def yes_no(self):
+            self.close()
+            self.open1 = True
+
         def now_ip(self, s):
             global ip, Address, update_mas, update_ip
 
@@ -291,12 +329,6 @@ class instance(QMainWindow):
                     self.interlocutor_ip.setText("interlocutor ip")
                     self.interlocutor_adress.setText("Address")
 
-        def exit_menu(self):
-            global decode
-            try:
-                decode = int(self.encode.text())
-            except:
-                self.encode.setText("3")
     def __init__(self):
         global dark, timer
         super().__init__()
@@ -307,6 +339,7 @@ class instance(QMainWindow):
         self.on = False
         self.login = ''
         self.window_setting_ipaddress = self.SettingWindowMenuipaddress()
+        self.Setting_Window_Menu_Color  = self.SettingWindowMenuColor()
         self.window_setting = self.SettingWindowMenu()
         self.open = True
         self.open1 = True
@@ -356,8 +389,6 @@ class instance(QMainWindow):
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key.Key_Return:
             self.update_message()
-    def test1(self):
-        print(453)
 
     def init_ui(self):
         self.setGeometry(1000, 650, 450, 200)
@@ -429,20 +460,10 @@ class instance(QMainWindow):
             dark = 3
 
     def ip_address_settings_window(self):
-        global dark, custom_colors
-        if self.open1:
-            self.window_setting_ipaddress.show()
-            self.open1 = False
-        else:
-            if dark == 2:
-                self.setStyleSheet(qdarktheme.load_stylesheet())
-            if dark == 1:
-                self.setStyleSheet(qdarktheme.load_stylesheet("light"))
-            self.window_setting_ipaddress.hide()
-            self.open1 = True
-            if dark == 3:
-                self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
-                dark = 3
+        self.window_setting_ipaddress.show()
+
+    def colors_settings_window(self):
+        self.Setting_Window_Menu_Color.show()
 
     def color_settings_window(self):
         global dark, custom_colors
@@ -611,7 +632,7 @@ class instance(QMainWindow):
 
                     self.button_action1 = QAction("Настройка цветов", self)
                     self.button_action1.setStatusTip("This is your button")
-                    self.button_action1.triggered.connect(self.color_settings_window)
+                    self.button_action1.triggered.connect(self.colors_settings_window)
 
                     self.button_action2 = QAction("Настройка IP.address", self)
                     self.button_action2.setStatusTip("This is your button")
