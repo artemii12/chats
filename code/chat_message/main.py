@@ -3,7 +3,7 @@ import qdarktheme
 import socket
 import threading
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, \
-    QLabel, QLineEdit, QWidget, QCheckBox, QMessageBox
+    QLabel, QLineEdit, QWidget, QCheckBox, QMessageBox, QToolBar
 from PyQt6 import QtGui, QtCore
 import sqlite3
 from encoding import encode_, decode, decode_, ALPHA
@@ -247,6 +247,7 @@ class instance(QMainWindow):
                 dark = 3
 
     def sys_exit(self):
+
         sys.exit()
 
     def read_sok(self):
@@ -394,15 +395,29 @@ class instance(QMainWindow):
                     self.registers.deleteLater()
                     self.exit_gl_menu.deleteLater()
 
-                    self.settings = QAction("&Настройки", self)
-                    self.settings.setStatusTip("This is your button")
-                    self.settings.triggered.connect(self.settings_window)
-                    self.menu.addAction(self.settings)
+                    self.button_action1 = QAction("Настройка цветов", self)
+                    self.button_action1.setStatusTip("This is your button")
+                    self.button_action1.triggered.connect(self.settings_window)
+
+                    self.button_action2 = QAction("Настройка IP.address", self)
+                    self.button_action2.setStatusTip("This is your button")
+                    self.button_action2.triggered.connect(self.settings_window)
+
+                    self.button_action3 = QAction("Настройка кодирования", self)
+                    self.button_action3.setStatusTip("This is your button")
+                    self.button_action3.triggered.connect(self.settings_window)
+
+                    self.fileMenu = self.menu.addMenu("Настройки")
+                    self.fileMenu.addAction(self.button_action1)
+                    self.fileMenu.addAction(self.button_action2)
+                    self.fileMenu.addAction(self.button_action3)
 
                     self.exit_gl_menu = QAction("Выход", self)
                     self.exit_gl_menu.setStatusTip("This is your button")
                     self.exit_gl_menu.triggered.connect(self.sys_exit)
                     self.menu.addAction(self.exit_gl_menu)
+
+
 
 
                     self.setWindowTitle('CHAT')
