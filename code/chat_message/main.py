@@ -9,6 +9,7 @@ import sqlite3
 from encoding import encode_, decode, decode_, ALPHA
 from variables import ip, Address, update_mas, system_update, dark, custom_colors, update_ip, exit_
 from creating_objects import updating_settings
+from creating_objects_menu_ipaddress import updating_settings as set_ipaddress
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QAction, QIcon
 class instance(QMainWindow):
@@ -100,7 +101,202 @@ class instance(QMainWindow):
                 decode = int(self.encode.text())
             except:
                 self.encode.setText("3")
+    class SettingWindowMenuipaddress(QWidget):
+        global ip, Address, update_mas, update_ip
 
+        def __init__(self):
+            super().__init__()
+            self.update()
+            self.old_pos = None
+
+        # вызывается при нажатии кнопки мыши
+        def mousePressEvent(self, event):
+            if event.button() == QtCore.Qt.MouseButton.LeftButton:
+                self.old_pos = event.pos()
+
+        # вызывается при отпускании кнопки мыши
+        def mouseReleaseEvent(self, event):
+            if event.button() == QtCore.Qt.MouseButton.LeftButton:
+                self.old_pos = None
+
+        # вызывается всякий раз, когда мышь перемещается
+        def mouseMoveEvent(self, event):
+            if not self.old_pos:
+                return
+            delta = event.pos() - self.old_pos
+            self.move(self.pos() + delta)
+
+        def update(self):
+            global decode
+            self.setGeometry(1455, 650, 200, 250)
+            self.setWindowTitle('UNKNOWN INCOMING')
+            self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
+            self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
+
+            self.btn_registration = QPushButton('updating the decoder', self)
+            self.btn_registration.resize(self.btn_registration.sizeHint())
+            self.btn_registration.move(0, 0)
+            self.btn_registration.resize(self.btn_registration.sizeHint())
+            self.btn_registration.clicked.connect(self.exit_menu)
+
+            self.interlocutor_ip = QLineEdit(self)
+            self.interlocutor_ip.setText("ip")
+            self.interlocutor_ip.resize(77, 20)
+            self.interlocutor_ip.move(0, 25)
+
+            self.interlocutor_adress = QLineEdit(self)
+            self.interlocutor_adress.setText("address")
+            self.interlocutor_adress.resize(50, 20)
+            self.interlocutor_adress.move(80, 25)
+
+            self.btn_now_ip = QPushButton('->', self)
+            self.btn_now_ip.clicked.connect(self.now_ip)
+            self.btn_now_ip.resize(self.btn_now_ip.sizeHint())
+            self.btn_now_ip.resize(24, 24)
+            self.btn_now_ip.move(131, 25)
+            self.btn_now_ip.setVisible(True)
+
+            self.checkbox = QCheckBox("white theme", self)
+            self.checkbox.move(0, 50)
+            self.checkbox.resize(self.checkbox.sizeHint())
+            self.checkbox.clicked.connect(self.yes_no)
+
+            self.background = QLineEdit(self)
+            self.background.setText("#bcacd4")
+            self.background.resize(110, 20)
+            self.background.move(0, 75)
+
+            self.border = QLineEdit(self)
+            self.border.setText("#d596fa")
+            self.border.resize(110, 20)
+            self.border.move(0, 100)
+
+            self.foreground = QLineEdit(self)
+            self.foreground.setText("#18047e")
+            self.foreground.resize(110, 20)
+            self.foreground.move(0, 125)
+
+            self.primary = QLineEdit(self)
+            self.primary.setText("#8624e4")
+            self.primary.resize(110, 20)
+            self.primary.move(0, 150)
+
+            self.input_background = QLineEdit(self)
+            self.input_background.setText("#d596fa")
+            self.input_background.resize(110, 20)
+            self.input_background.move(0, 175)
+
+            self.inputButton_hoverBackground = QLineEdit(self)
+            self.inputButton_hoverBackground.setText("#18047e")
+            self.inputButton_hoverBackground.resize(110, 20)
+            self.inputButton_hoverBackground.move(0, 200)
+
+            self.text_background = QLabel(self)
+            self.text_background.setText('background')
+            self.text_background.resize(self.text_background.sizeHint())
+            self.text_background.move(115, 75)
+
+            self.text_border = QLabel(self)
+            self.text_border.setText('border')
+            self.text_border.resize(self.text_border.sizeHint())
+            self.text_border.move(115, 100)
+
+            self.text_foreground = QLabel(self)
+            self.text_foreground.setText('foreground')
+            self.text_foreground.resize(self.text_foreground.sizeHint())
+            self.text_foreground.move(115, 125)
+
+            self.text_primary = QLabel(self)
+            self.text_primary.setText('primary')
+            self.text_primary.resize(self.text_primary.sizeHint())
+            self.text_primary.move(115, 150)
+
+            self.text_input_background = QLabel(self)
+            self.text_input_background.setText('input')
+            self.text_input_background.resize(self.text_input_background.sizeHint())
+            self.text_input_background.move(115, 172)
+            self.text_input_background = QLabel(self)
+            self.text_input_background.setText('background')
+            self.text_input_background.resize(self.text_input_background.sizeHint())
+            self.text_input_background.move(115, 180)
+
+            self.text_inputButton_hoverBackground = QLabel(self)
+            self.text_inputButton_hoverBackground.setText('inputButton')
+            self.text_inputButton_hoverBackground.resize(self.text_inputButton_hoverBackground.sizeHint())
+            self.text_inputButton_hoverBackground.move(115, 197)
+            self.text_inputButton_hoverBackground = QLabel(self)
+            self.text_inputButton_hoverBackground.setText('Background')
+            self.text_inputButton_hoverBackground.resize(self.text_inputButton_hoverBackground.sizeHint())
+            self.text_inputButton_hoverBackground.move(115, 205)
+
+            self.text_foreground = QPushButton('UPDATE_COLORS', self)
+            self.text_foreground.clicked.connect(self.update_colors)
+            self.text_foreground.resize(self.text_foreground.sizeHint())
+            self.text_foreground.move(0, 225)
+
+            self.encode = QLineEdit(self)
+            self.encode.setText(str(decode))
+            self.encode.resize(70, 25)
+            self.encode.move(130, 0)
+
+        def update_colors(self):
+            global custom_colors, dark, system_update
+            background = self.background.text()
+            border = self.border.text()
+            foreground = self.foreground.text()
+            primary = self.primary.text()
+            input_background = self.input_background.text()
+            input_button_hover_background = self.inputButton_hoverBackground.text()
+
+            self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
+            custom_colors = {"background": f"{background}",
+                             "border": f"{border}",
+                             "foreground": f"{foreground}",
+                             "primary": f"{primary}",
+                             "input.background": f"{input_background}",
+                             "inputButton.hoverBackground": f"{input_button_hover_background}"}
+            self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
+            dark = 3
+            system_update = True
+
+        def yes_no(self):
+            global dark, custom_colors
+            if self.checkbox.isChecked():
+                dark = 1
+                self.setStyleSheet(qdarktheme.load_stylesheet("light"))
+            if not self.checkbox.isChecked():
+                dark = 2
+                self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
+
+        def now_ip(self, s):
+            global ip, Address, update_mas, update_ip
+
+            self.reply = QMessageBox(self)
+            self.reply.setWindowFlag(QtCore.Qt.WindowType.FramelessWindowHint)
+
+            self.reply.move(self.geometry().x(), self.geometry().y()-100)
+            self.reply.setText("Вы уверены что хотите сменить ipaddress")
+            self.reply.setStandardButtons(QMessageBox.StandardButton.Yes |
+                                     QMessageBox.StandardButton.No)
+            self.reply.setIcon(QMessageBox.Icon.Question)
+            x = self.reply.exec()
+
+            if x == QMessageBox.StandardButton.Yes:
+                try:
+                    ip = str(self.interlocutor_ip.text())
+                    Address = int(self.interlocutor_adress.text())
+                    update_ip = True
+                    update_mas = True
+                except ValueError:
+                    self.interlocutor_ip.setText("interlocutor ip")
+                    self.interlocutor_adress.setText("Address")
+
+        def exit_menu(self):
+            global decode
+            try:
+                decode = int(self.encode.text())
+            except:
+                self.encode.setText("3")
     def __init__(self):
         global dark, timer
         super().__init__()
@@ -110,8 +306,10 @@ class instance(QMainWindow):
         self.password = {"darling": "1234", "1": "1"}
         self.on = False
         self.login = ''
+        self.window_setting_ipaddress = self.SettingWindowMenuipaddress()
         self.window_setting = self.SettingWindowMenu()
         self.open = True
+        self.open1 = True
         self.exit = False
         self.control = True
         self.old_pos = None
@@ -230,7 +428,23 @@ class instance(QMainWindow):
             self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
             dark = 3
 
-    def settings_window(self):
+    def ip_address_settings_window(self):
+        global dark, custom_colors
+        if self.open1:
+            self.window_setting_ipaddress.show()
+            self.open1 = False
+        else:
+            if dark == 2:
+                self.setStyleSheet(qdarktheme.load_stylesheet())
+            if dark == 1:
+                self.setStyleSheet(qdarktheme.load_stylesheet("light"))
+            self.window_setting_ipaddress.hide()
+            self.open1 = True
+            if dark == 3:
+                self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
+                dark = 3
+
+    def color_settings_window(self):
         global dark, custom_colors
         if self.open:
             self.window_setting.show()
@@ -397,15 +611,15 @@ class instance(QMainWindow):
 
                     self.button_action1 = QAction("Настройка цветов", self)
                     self.button_action1.setStatusTip("This is your button")
-                    self.button_action1.triggered.connect(self.settings_window)
+                    self.button_action1.triggered.connect(self.color_settings_window)
 
                     self.button_action2 = QAction("Настройка IP.address", self)
                     self.button_action2.setStatusTip("This is your button")
-                    self.button_action2.triggered.connect(self.settings_window)
+                    self.button_action2.triggered.connect(self.ip_address_settings_window)
 
                     self.button_action3 = QAction("Настройка кодирования", self)
                     self.button_action3.setStatusTip("This is your button")
-                    self.button_action3.triggered.connect(self.settings_window)
+                    self.button_action3.triggered.connect(self.color_settings_window)
 
                     self.fileMenu = self.menu.addMenu("Настройки")
                     self.fileMenu.addAction(self.button_action1)
