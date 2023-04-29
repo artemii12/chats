@@ -190,7 +190,6 @@ class instance(QMainWindow):
             self.exit.move(170, 0)
             self.exit.setVisible(True)
 
-
         def update_colors(self):
             global custom_colors, dark, system_update
             background = self.background.text()
@@ -210,7 +209,17 @@ class instance(QMainWindow):
             self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
             dark = 3
             system_update = True
+
         def yes_no(self):
+            global dark, custom_colors
+            if self.checkbox.isChecked():
+                dark = 1
+                self.setStyleSheet(qdarktheme.load_stylesheet("light"))
+            if not self.checkbox.isChecked():
+                dark = 2
+                self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
+
+        def exit(self):
             self.close()
             self.open1 = True
 
@@ -434,6 +443,9 @@ class instance(QMainWindow):
     def colors_settings_window(self):
         self.Setting_Window_Menu_Color.show()
 
+    def sessions_settings_window(self):
+        pass
+
     def color_settings_window(self):
         global dark, custom_colors
         if self.open:
@@ -603,7 +615,7 @@ class instance(QMainWindow):
                     self.button_action1.setStatusTip("This is your button")
                     self.button_action1.triggered.connect(self.colors_settings_window)
 
-                    self.button_action2 = QAction("Настройка IP.address", self)
+                    self.button_action2 = QAction("Создание временного сеанса", self)
                     self.button_action2.setStatusTip("This is your button")
                     self.button_action2.triggered.connect(self.ip_address_settings_window)
 
@@ -616,13 +628,15 @@ class instance(QMainWindow):
                     self.fileMenu.addAction(self.button_action2)
                     self.fileMenu.addAction(self.button_action3)
 
+                    self.sessions_gl_menu = QAction("Сессии", self)
+                    self.sessions_gl_menu.setStatusTip("This is your button")
+                    self.sessions_gl_menu.triggered.connect(self.sessions_settings_window)
+                    self.menu.addAction(self.sessions_gl_menu)
+
                     self.exit_gl_menu = QAction("Выход", self)
                     self.exit_gl_menu.setStatusTip("This is your button")
                     self.exit_gl_menu.triggered.connect(self.sys_exit)
                     self.menu.addAction(self.exit_gl_menu)
-
-
-
 
                     self.setWindowTitle('CHAT')
                     for i in range(1, 9):
