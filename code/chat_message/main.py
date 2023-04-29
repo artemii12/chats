@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, \
     QLabel, QLineEdit, QWidget, QCheckBox, QMessageBox, QToolBar
 from PyQt6 import QtGui, QtCore
 import sqlite3
+import functools
 from encoding import encode_, decode, decode_, ALPHA
 from variables import ip, Address, update_mas, system_update, dark, custom_colors, update_ip, exit_
 from creating_objects import updating_settings
@@ -185,7 +186,7 @@ class instance(QMainWindow):
             self.text_foreground.move(0, 175)
 
             self.exit = QPushButton('✖', self)
-            self.exit.clicked.connect(self.yes_no)
+            self.exit.clicked.connect(self.exit_)
             self.exit.resize(self.exit.sizeHint())
             self.exit.move(170, 0)
             self.exit.setVisible(True)
@@ -219,7 +220,7 @@ class instance(QMainWindow):
                 dark = 2
                 self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
 
-        def exit(self):
+        def exit_(self):
             self.close()
             self.open1 = True
 
@@ -534,7 +535,7 @@ class instance(QMainWindow):
         if self.on:
             self.add_account()
         else:
-            self.count()
+            self.count_()
 
     def add_account(self):
         conn = sqlite3.connect('system_data.db')
@@ -549,6 +550,12 @@ class instance(QMainWindow):
         c.close()
         conn.close()
         self.registration()
+
+    def add_session(self):
+        pass
+
+    def del_session(self):
+        pass
 
     def registration(self):
         self.text_LOGIN.setText('LOGIN  ')
@@ -578,7 +585,10 @@ class instance(QMainWindow):
             self.registers.setText("вход")
             self.on = True
 
-    def count(self):
+    def connect_session(self, id):
+        print(978)
+        print(f"{str(id)}")
+    def count_(self):
         global ip, Address
         self.login = self.textBox1.text()
         self.password = self.textBox2.text()
@@ -627,11 +637,42 @@ class instance(QMainWindow):
                     self.fileMenu.addAction(self.button_action1)
                     self.fileMenu.addAction(self.button_action2)
                     self.fileMenu.addAction(self.button_action3)
+                    def rtf_fd():
+                        conn = sqlite3.connect('system_data.db')
+                        c = conn.cursor()
+                        login = self.login
+                        ip = '191.196.1.1'
+                        address = 25525
+                        c.execute("INSERT INTO sessions (login, ip, address) VALUES(?, ?, ?)",
+                                  (login, ip, address))
+                        conn.commit()
+                        c.close()
+                        conn.close()
 
-                    self.sessions_gl_menu = QAction("Сессии", self)
-                    self.sessions_gl_menu.setStatusTip("This is your button")
-                    self.sessions_gl_menu.triggered.connect(self.sessions_settings_window)
-                    self.menu.addAction(self.sessions_gl_menu)
+                    sql = sqlite3.connect('system_data.db')
+                    cursor = sql.cursor()
+                    sqlite_select_query = '''SELECT * from sessions'''
+                    cursor.execute(sqlite_select_query)
+                    records = cursor.fetchall()
+
+
+                    self.button_action4 = QAction("Добавлление сессии", self)
+                    self.button_action4.setStatusTip("This is your button")
+                    self.button_action4.triggered.connect(self.add_session)
+
+                    self.button_action5 = QAction("Удаление сессии", self)
+                    self.button_action5.setStatusTip("This is your button")
+                    self.button_action5.triggered.connect(self.del_session)
+
+                    self.sessions_menu = self.menu.addMenu("Сессии")
+                    for i in range(len(records)):
+                        s = {'self': self}
+                        exec(f'self.button_ip{i} = QAction(f"{str(records[i][1])}:{str(records[i][2])}", self)')
+                        exec(f'self.button_ip{i}.setStatusTip("This is your button")')
+                        exec(f'self.button_ip{i}.triggered.connect(self.connect_session)')
+                        exec(f'self.sessions_menu.addAction(self.button_ip{i})')
+                    self.sessions_menu.addAction(self.button_action4)
+                    self.sessions_menu.addAction(self.button_action5)
 
                     self.exit_gl_menu = QAction("Выход", self)
                     self.exit_gl_menu.setStatusTip("This is your button")
