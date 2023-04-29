@@ -9,13 +9,13 @@ import sqlite3
 from encoding import encode_, decode, decode_, ALPHA
 from variables import ip, Address, update_mas, system_update, dark, custom_colors, update_ip, exit_
 from creating_objects import updating_settings
-from creating_objects_menu_ipaddress import updating_settings as set_ipaddress
+from creating_objects_menu_ipaddress import SettingWindowMenuipaddress
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QAction, QIcon
 class instance(QMainWindow):
     global ip, Address, update_mas, update_ip
 
-    class SettingWindowMenu(QWidget):
+    class SettingWindowMenuDecode(QWidget):
         global ip, Address, update_mas, update_ip
 
         def __init__(self):
@@ -241,8 +241,6 @@ class instance(QMainWindow):
                 dark = 2
                 self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
 
-
-
     class SettingWindowMenuipaddress(QWidget):
         global ip, Address, update_mas, update_ip
 
@@ -299,9 +297,6 @@ class instance(QMainWindow):
             self.exit.move(25, 50)
             self.exit.setVisible(True)
 
-
-
-
         def yes_no(self):
             self.close()
             self.open1 = True
@@ -312,10 +307,10 @@ class instance(QMainWindow):
             self.reply = QMessageBox(self)
             self.reply.setWindowFlag(QtCore.Qt.WindowType.FramelessWindowHint)
 
-            self.reply.move(self.geometry().x(), self.geometry().y()-100)
+            self.reply.move(self.geometry().x(), self.geometry().y() - 100)
             self.reply.setText("Вы уверены что хотите сменить ipaddress")
             self.reply.setStandardButtons(QMessageBox.StandardButton.Yes |
-                                     QMessageBox.StandardButton.No)
+                                          QMessageBox.StandardButton.No)
             self.reply.setIcon(QMessageBox.Icon.Question)
             x = self.reply.exec()
 
@@ -329,18 +324,19 @@ class instance(QMainWindow):
                     self.interlocutor_ip.setText("interlocutor ip")
                     self.interlocutor_adress.setText("Address")
 
+
+
     def __init__(self):
         global dark, timer
         super().__init__()
         self.setStyleSheet(qdarktheme.load_stylesheet())
         self.init_ui()
         self.chats = ['', '', '', '', '', '', '', '']
-        self.password = {"darling": "1234", "1": "1"}
         self.on = False
         self.login = ''
         self.window_setting_ipaddress = self.SettingWindowMenuipaddress()
-        self.Setting_Window_Menu_Color  = self.SettingWindowMenuColor()
-        self.window_setting = self.SettingWindowMenu()
+        self.Setting_Window_Menu_Color = self.SettingWindowMenuColor()
+        self.window_setting_decode = self.SettingWindowMenuDecode()
         self.open = True
         self.open1 = True
         self.exit = False
@@ -468,14 +464,14 @@ class instance(QMainWindow):
     def color_settings_window(self):
         global dark, custom_colors
         if self.open:
-            self.window_setting.show()
+            self.window_setting_decode.show()
             self.open = False
         else:
             if dark == 2:
                 self.setStyleSheet(qdarktheme.load_stylesheet())
             if dark == 1:
                 self.setStyleSheet(qdarktheme.load_stylesheet("light"))
-            self.window_setting.hide()
+            self.window_setting_decode.hide()
             self.open = True
             if dark == 3:
                 self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
