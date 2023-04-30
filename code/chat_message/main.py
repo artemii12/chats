@@ -8,11 +8,12 @@ from PyQt6 import QtGui, QtCore
 import sqlite3
 import functools
 from encoding import encode_, decode, decode_, ALPHA
-from variables import ip, Address, update_mas, system_update, dark, custom_colors, update_ip, exit_
+from variables import ip, Address, update_mas, system_update, dark, custom_colors, update_ip, exit_, login_
 from creating_objects import updating_settings
 from creating_objects_menu_ipaddress import SettingWindowMenuipaddress
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QAction, QIcon
+from ip_pow import now_ip1, now_ip2, now_ip3, now_ip4, now_ip5
 class instance(QMainWindow):
     global ip, Address, update_mas, update_ip
 
@@ -307,7 +308,212 @@ class instance(QMainWindow):
                     self.interlocutor_ip.setText("interlocutor ip")
                     self.interlocutor_adress.setText("Address")
 
+    class AddAndDelSessionWindow(QWidget):
+        global ip, Address, update_mas, update_ip, login
 
+        def __init__(self):
+            super().__init__()
+            self.update()
+            self.old_pos = None
+
+        # вызывается при нажатии кнопки мыши
+        def mousePressEvent(self, event):
+            if event.button() == QtCore.Qt.MouseButton.LeftButton:
+                self.old_pos = event.pos()
+
+        # вызывается при отпускании кнопки мыши
+        def mouseReleaseEvent(self, event):
+            if event.button() == QtCore.Qt.MouseButton.LeftButton:
+                self.old_pos = None
+
+        # вызывается всякий раз, когда мышь перемещается
+        def mouseMoveEvent(self, event):
+            if not self.old_pos:
+                return
+            delta = event.pos() - self.old_pos
+            self.move(self.pos() + delta)
+
+        def update(self):
+            global decode
+            self.setGeometry(1455, 650, 200, 250)
+            self.setWindowTitle('UNKNOWN INCOMING')
+            self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
+            self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
+            sql = sqlite3.connect('system_data.db')
+            cursor = sql.cursor()
+            sqlite_select_query = '''SELECT * from sessions'''
+            cursor.execute(sqlite_select_query)
+            records = cursor.fetchall()
+            for i in range(1, 6):
+                exec(f'self.interlocutor_ip{i} = QLineEdit(self)')
+                exec(f'self.interlocutor_ip{i}.setText("{records[i-1][1]}")')
+                exec(f'self.interlocutor_ip{i}.resize(75, 24)')
+                exec(f'self.interlocutor_ip{i}.move(0, 25*{i})')
+
+                exec(f'self.interlocutor_adress{i} = QLineEdit(self)')
+                exec(f'self.interlocutor_adress{i}.setText("{records[i-1][2]}")')
+                exec(f'self.interlocutor_adress{i}.resize(75, 24)')
+                exec(f'self.interlocutor_adress{i}.move(76, 25*{i})')
+
+                exec(f'self.btn_load_ip{i} = QPushButton("load", self)')
+                exec(f'self.btn_load_ip{i}.clicked.connect(self.now_ip{i})')
+                exec(f'self.btn_load_ip{i}.resize(self.btn_load_ip{i}.sizeHint())')
+                exec(f'self.btn_load_ip{i}.move(152, 25*{i})')
+
+            cursor.close()
+            sql.close()
+
+            self.btn_saving_parameters = QPushButton('saving parameters', self)
+            self.btn_saving_parameters.clicked.connect(self.saving_parameters)
+            self.btn_saving_parameters.resize(self.btn_saving_parameters.sizeHint())
+            self.btn_saving_parameters.move(100, 200)
+            self.btn_saving_parameters.setVisible(True)
+
+            self.exit = QPushButton('exit', self)
+            self.exit.clicked.connect(self.yes_no)
+            self.exit.resize(self.exit.sizeHint())
+            self.exit.move(25, 200)
+            self.exit.setVisible(True)
+
+        def saving_parameters(self):
+            global login_
+
+            sqlite_connection = sqlite3.connect('system_data.db')
+            sqlite_connection.execute(f"DELETE from sessions where login='{login_}'")
+            sqlite_connection.commit()
+            sqlite_connection.close()
+
+            conn = sqlite3.connect('system_data.db')
+            c = conn.cursor()
+
+            for i in range(1, 6):
+                exec(f'ip_dop = self.interlocutor_ip{i}.text()')
+                exec(f'address = self.interlocutor_adress{i}.text()')
+                exec(f'print(ip_dop)')
+                exec(f'print(address)')
+                exec(f'c.execute("INSERT INTO sessions (login, ip, address) VALUES(?, ?, ?)",(login_, ip_dop, address))')
+            conn.commit()
+            c.close()
+            conn.close()
+
+        def yes_no(self):
+            self.close()
+            self.open1 = True
+
+        def now_ip1(self):
+            global ip, Address, update_mas, update_ip
+
+            self.reply = QMessageBox(self)
+            self.reply.setWindowFlag(QtCore.Qt.WindowType.FramelessWindowHint)
+
+            self.reply.move(self.geometry().x(), self.geometry().y() - 100)
+            self.reply.setText("Вы уверены что хотите сменить ipaddress")
+            self.reply.setStandardButtons(QMessageBox.StandardButton.Yes |
+                                          QMessageBox.StandardButton.No)
+            self.reply.setIcon(QMessageBox.Icon.Question)
+            x = self.reply.exec()
+
+            if x == QMessageBox.StandardButton.Yes:
+                try:
+                    ip = str(self.interlocutor_ip1.text())
+                    Address = int(self.interlocutor_adress1.text())
+                    update_ip = True
+                    update_mas = True
+                except ValueError:
+                    self.interlocutor_ip1.setText("interlocutor ip")
+                    self.interlocutor_adress1.setText("Address")
+
+        def now_ip2(self):
+            global ip, Address, update_mas, update_ip
+
+            self.reply = QMessageBox(self)
+            self.reply.setWindowFlag(QtCore.Qt.WindowType.FramelessWindowHint)
+
+            self.reply.move(self.geometry().x(), self.geometry().y() - 100)
+            self.reply.setText("Вы уверены что хотите сменить ipaddress")
+            self.reply.setStandardButtons(QMessageBox.StandardButton.Yes |
+                                          QMessageBox.StandardButton.No)
+            self.reply.setIcon(QMessageBox.Icon.Question)
+            x = self.reply.exec()
+
+            if x == QMessageBox.StandardButton.Yes:
+                try:
+                    ip = str(self.interlocutor_ip2.text())
+                    Address = int(self.interlocutor_adress2.text())
+                    update_ip = True
+                    update_mas = True
+                except ValueError:
+                    self.interlocutor_ip2.setText("interlocutor ip")
+                    self.interlocutor_adress2.setText("Address")
+
+        def now_ip3(self):
+            global ip, Address, update_mas, update_ip
+
+            self.reply = QMessageBox(self)
+            self.reply.setWindowFlag(QtCore.Qt.WindowType.FramelessWindowHint)
+
+            self.reply.move(self.geometry().x(), self.geometry().y() - 100)
+            self.reply.setText("Вы уверены что хотите сменить ipaddress")
+            self.reply.setStandardButtons(QMessageBox.StandardButton.Yes |
+                                          QMessageBox.StandardButton.No)
+            self.reply.setIcon(QMessageBox.Icon.Question)
+            x = self.reply.exec()
+
+            if x == QMessageBox.StandardButton.Yes:
+                try:
+                    ip = str(self.interlocutor_ip3.text())
+                    Address = int(self.interlocutor_adress3.text())
+                    update_ip = True
+                    update_mas = True
+                except ValueError:
+                    self.interlocutor_ip3.setText("interlocutor ip")
+                    self.interlocutor_adress3.setText("Address")
+
+        def now_ip4(self):
+            global ip, Address, update_mas, update_ip
+
+            self.reply = QMessageBox(self)
+            self.reply.setWindowFlag(QtCore.Qt.WindowType.FramelessWindowHint)
+
+            self.reply.move(self.geometry().x(), self.geometry().y() - 100)
+            self.reply.setText("Вы уверены что хотите сменить ipaddress")
+            self.reply.setStandardButtons(QMessageBox.StandardButton.Yes |
+                                          QMessageBox.StandardButton.No)
+            self.reply.setIcon(QMessageBox.Icon.Question)
+            x = self.reply.exec()
+
+            if x == QMessageBox.StandardButton.Yes:
+                try:
+                    ip = str(self.interlocutor_ip4.text())
+                    Address = int(self.interlocutor_adress4.text())
+                    update_ip = True
+                    update_mas = True
+                except ValueError:
+                    self.interlocutor_ip4.setText("interlocutor ip")
+                    self.interlocutor_adress4.setText("Address")
+
+        def now_ip5(self):
+            global ip, Address, update_mas, update_ip
+
+            self.reply = QMessageBox(self)
+            self.reply.setWindowFlag(QtCore.Qt.WindowType.FramelessWindowHint)
+
+            self.reply.move(self.geometry().x(), self.geometry().y() - 100)
+            self.reply.setText("Вы уверены что хотите сменить ipaddress")
+            self.reply.setStandardButtons(QMessageBox.StandardButton.Yes |
+                                          QMessageBox.StandardButton.No)
+            self.reply.setIcon(QMessageBox.Icon.Question)
+            x = self.reply.exec()
+
+            if x == QMessageBox.StandardButton.Yes:
+                try:
+                    ip = str(self.interlocutor_ip5.text())
+                    Address = int(self.interlocutor_adress5.text())
+                    update_ip = True
+                    update_mas = True
+                except ValueError:
+                    self.interlocutor_ip5.setText("interlocutor ip")
+                    self.interlocutor_adress5.setText("Address")
 
     def __init__(self):
         global dark, timer
@@ -320,6 +526,7 @@ class instance(QMainWindow):
         self.window_setting_ipaddress = self.SettingWindowMenuipaddress()
         self.Setting_Window_Menu_Color = self.SettingWindowMenuColor()
         self.window_setting_decode = self.SettingWindowMenuDecode()
+        self.add_and_del_session_Window = self.AddAndDelSessionWindow()
         self.open = True
         self.open1 = True
         self.exit = False
@@ -374,14 +581,10 @@ class instance(QMainWindow):
         self.setWindowTitle('UNKNOWN INCOMING')
         self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
 
-
-
         self.text_LOGIN = QLabel(self)
         self.text_LOGIN.setText('LOGIN  ')
         self.text_LOGIN.resize(self.text_LOGIN.sizeHint())
         self.text_LOGIN.move(197, 40)
-
-
 
         self.text_PASSWORD = QLabel(self)
         self.text_PASSWORD.setText('PASSWORD  ')
@@ -420,13 +623,10 @@ class instance(QMainWindow):
         self.registers.triggered.connect(self.registration)
         self.menu.addAction(self.registers)
 
-
         self.exit_gl_menu = QAction("Выход", self)
         self.exit_gl_menu.setStatusTip("This is your button")
         self.exit_gl_menu.triggered.connect(self.sys_exit)
         self.menu.addAction(self.exit_gl_menu)
-
-
 
     def update_setting(self):
         global dark
@@ -551,11 +751,8 @@ class instance(QMainWindow):
         conn.close()
         self.registration()
 
-    def add_session(self):
-        pass
-
-    def del_session(self):
-        pass
+    def add_and_del_session(self):
+        self.add_and_del_session_Window.show()
 
     def registration(self):
         self.text_LOGIN.setText('LOGIN  ')
@@ -585,11 +782,23 @@ class instance(QMainWindow):
             self.registers.setText("вход")
             self.on = True
 
-    def connect_session(self, id):
-        print(978)
-        print(f"{str(id)}")
-    def count_(self):
+    def connect_session1(self):
         global ip, Address
+        sql = sqlite3.connect('system_data.db')
+        cursor = sql.cursor()
+        sqlite_select_query = '''SELECT * from sessions'''
+        cursor.execute(sqlite_select_query)
+        records = cursor.fetchall()
+        for i in range(len(records)):
+            if records[i][0] == self.login:
+                if i == 0:
+                    ip = records[i][1]
+                    Address = str(records[i][2])
+        cursor.close()
+        sql.close()
+
+    def count_(self):
+        global ip, Address, login_
         self.login = self.textBox1.text()
         self.password = self.textBox2.text()
         if ip == '':
@@ -612,6 +821,7 @@ class instance(QMainWindow):
             if str(self.login) == str(name):
                 if str(self.password) == str(password):
                     print(65)
+                    login_ = self.login
                     self.text_LOGIN.setVisible(False)
                     self.textBox1.setVisible(False)
                     self.text_PASSWORD.setVisible(False)
@@ -620,6 +830,8 @@ class instance(QMainWindow):
 
                     self.registers.deleteLater()
                     self.exit_gl_menu.deleteLater()
+
+                    self.mapper = QtCore.QSignalMapper(self)
 
                     self.button_action1 = QAction("Настройка цветов", self)
                     self.button_action1.setStatusTip("This is your button")
@@ -655,24 +867,13 @@ class instance(QMainWindow):
                     cursor.execute(sqlite_select_query)
                     records = cursor.fetchall()
 
-
-                    self.button_action4 = QAction("Добавлление сессии", self)
+                    self.button_action4 = QAction("Добавлление/Удаление сессии", self)
                     self.button_action4.setStatusTip("This is your button")
-                    self.button_action4.triggered.connect(self.add_session)
-
-                    self.button_action5 = QAction("Удаление сессии", self)
-                    self.button_action5.setStatusTip("This is your button")
-                    self.button_action5.triggered.connect(self.del_session)
+                    self.button_action4.triggered.connect(self.add_and_del_session)
 
                     self.sessions_menu = self.menu.addMenu("Сессии")
-                    for i in range(len(records)):
-                        s = {'self': self}
-                        exec(f'self.button_ip{i} = QAction(f"{str(records[i][1])}:{str(records[i][2])}", self)')
-                        exec(f'self.button_ip{i}.setStatusTip("This is your button")')
-                        exec(f'self.button_ip{i}.triggered.connect(self.connect_session)')
-                        exec(f'self.sessions_menu.addAction(self.button_ip{i})')
+
                     self.sessions_menu.addAction(self.button_action4)
-                    self.sessions_menu.addAction(self.button_action5)
 
                     self.exit_gl_menu = QAction("Выход", self)
                     self.exit_gl_menu.setStatusTip("This is your button")
