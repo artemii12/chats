@@ -1,11 +1,6 @@
-from PyQt6.QtWidgets import QPushButton, \
-    QLabel, QLineEdit, QCheckBox
-from PyQt6 import QtCore
-import qdarktheme
-from encoding import decode
-from PyQt6.QtWidgets import QPushButton, QLineEdit, QWidget, QMessageBox
-from variables import ip, Address, update_mas, system_update, dark, custom_colors, update_ip, exit_
 
+from encoding import decode
+from variables import *
 class SettingWindowMenuipaddress(QWidget):
     global ip, Address, update_mas, update_ip
 

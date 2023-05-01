@@ -1,5 +1,4 @@
-from PyQt6.QtWidgets import QMessageBox
-from PyQt6 import QtCore
+from variables import *
 
 
 def now_ip1(self):

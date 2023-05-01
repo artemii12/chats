@@ -1,7 +1,4 @@
-from PyQt6.QtWidgets import QPushButton, \
-    QLabel, QLineEdit, QCheckBox
-from PyQt6 import QtCore
-import qdarktheme
+from variables import *
 from encoding import decode
 
 def updating_settings(self):

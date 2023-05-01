@@ -1,19 +1,8 @@
-import sys
-import qdarktheme
-import socket
-import threading
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, \
-    QLabel, QLineEdit, QWidget, QCheckBox, QMessageBox, QToolBar
-from PyQt6 import QtGui, QtCore
-import sqlite3
-import functools
 from encoding import encode_, decode, decode_, ALPHA
-from variables import ip, Address, update_mas, system_update, dark, custom_colors, update_ip, exit_, login_
 from creating_objects import updating_settings
 from creating_objects_menu_ipaddress import SettingWindowMenuipaddress
-from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtGui import QAction, QIcon
-from ip_pow import now_ip1, now_ip2, now_ip3, now_ip4, now_ip5
+from variables import *
+
 class instance(QMainWindow):
     global ip, Address, update_mas, update_ip
 
@@ -335,7 +324,7 @@ class instance(QMainWindow):
 
         def update(self):
             global decode
-            self.setGeometry(1455, 650, 200, 250)
+            self.setGeometry(1455, 650, 200, 200)
             self.setWindowTitle('UNKNOWN INCOMING')
             self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
             self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
@@ -366,13 +355,13 @@ class instance(QMainWindow):
             self.btn_saving_parameters = QPushButton('saving parameters', self)
             self.btn_saving_parameters.clicked.connect(self.saving_parameters)
             self.btn_saving_parameters.resize(self.btn_saving_parameters.sizeHint())
-            self.btn_saving_parameters.move(100, 200)
+            self.btn_saving_parameters.move(0, 155)
             self.btn_saving_parameters.setVisible(True)
 
             self.exit = QPushButton('exit', self)
             self.exit.clicked.connect(self.yes_no)
-            self.exit.resize(self.exit.sizeHint())
-            self.exit.move(25, 200)
+            self.exit.resize(self.btn_load_ip1.sizeHint())
+            self.exit.move(152, 155)
             self.exit.setVisible(True)
 
         def saving_parameters(self):
@@ -782,6 +771,49 @@ class instance(QMainWindow):
             self.registers.setText("вход")
             self.on = True
 
+    def log_out_of_your_account(self):
+        global ip, Address, login_
+        self.login = None
+        self.password = None
+        ip = ""
+        Address = 0
+        login_ = ''
+        self.chats = ['', '', '', '', '', '', '', '']
+        print(65)
+        self.text_LOGIN.setVisible(True)
+        self.textBox1.setVisible(True)
+        self.text_PASSWORD.setVisible(True)
+        self.textBox2.setVisible(True)
+        self.btn_enter_registr.setVisible(True)
+        self.exit_gl_menu.deleteLater()
+        self.fileMenu.deleteLater()
+        self.sessions_menu.deleteLater()
+        for i in range(1, 9):
+            exec(f'self.sms_text_{i}.deleteLater()')
+
+
+        self.menu = self.menuBar()
+
+        self.registers = QAction("&Регистрация", self)
+        self.registers.setStatusTip("This is your button")
+        self.registers.triggered.connect(self.registration)
+        self.menu.addAction(self.registers)
+
+        self.exit_gl_menu = QAction("Выход", self)
+        self.exit_gl_menu.setStatusTip("This is your button")
+        self.exit_gl_menu.triggered.connect(self.sys_exit)
+        self.menu.addAction(self.exit_gl_menu)
+
+
+        self.sending_sms.resize(self.btn_enter_registr.sizeHint())
+        self.sending_sms.resize(25, 25)
+        self.sending_sms.move(425, 170)
+        self.sending_sms.setVisible(False)
+
+        self.textBox3.resize(425, 20)
+        self.textBox3.move(0, 170)
+        self.textBox3.setVisible(False)
+
     def connect_session1(self):
         global ip, Address
         sql = sqlite3.connect('system_data.db')
@@ -845,10 +877,15 @@ class instance(QMainWindow):
                     self.button_action3.setStatusTip("This is your button")
                     self.button_action3.triggered.connect(self.color_settings_window)
 
+                    #  self.button_action4 = QAction("Выйти с аккаунта", self)
+                    #  self.button_action4.setStatusTip("This is your button")
+                    #  self.button_action4.triggered.connect(self.log_out_of_your_account)
+
                     self.fileMenu = self.menu.addMenu("Настройки")
                     self.fileMenu.addAction(self.button_action1)
                     self.fileMenu.addAction(self.button_action2)
                     self.fileMenu.addAction(self.button_action3)
+                    #  self.fileMenu.addAction(self.button_action4)
                     def rtf_fd():
                         conn = sqlite3.connect('system_data.db')
                         c = conn.cursor()
