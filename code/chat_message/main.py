@@ -1,8 +1,5 @@
-from encoding import encode_, decode, decode_, ALPHA
-from creating_objects import updating_settings
-from creating_objects_menu_ipaddress import SettingWindowMenuipaddress
-from variables import *
 
+from variables import *
 class instance(QMainWindow):
     global ip, Address, update_mas, update_ip
 
@@ -26,6 +23,14 @@ class instance(QMainWindow):
 
         # вызывается всякий раз, когда мышь перемещается
         def mouseMoveEvent(self, event):
+            global dark
+            if dark == 2:
+                self.setStyleSheet(qdarktheme.load_stylesheet())
+            if dark == 1:
+                self.setStyleSheet(qdarktheme.load_stylesheet("light"))
+            if dark == 3:
+                self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
+                dark = 3
             if not self.old_pos:
                 return
             delta = event.pos() - self.old_pos
@@ -33,6 +38,7 @@ class instance(QMainWindow):
 
         def update(self) -> None:
             global decode
+
             self.setGeometry(1455, 650, 200, 70)
             self.setWindowTitle('UNKNOWN INCOMING')
             self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
@@ -65,7 +71,6 @@ class instance(QMainWindow):
                 decode = int(self.encode.text())
             except:
                 self.encode.setText("3")
-
     class SettingWindowMenuColor(QWidget):
         global update_mas, update_ip
 
@@ -86,6 +91,14 @@ class instance(QMainWindow):
 
         # вызывается всякий раз, когда мышь перемещается
         def mouseMoveEvent(self, event):
+            global dark
+            if dark == 2:
+                self.setStyleSheet(qdarktheme.load_stylesheet())
+            if dark == 1:
+                self.setStyleSheet(qdarktheme.load_stylesheet("light"))
+            if dark == 3:
+                self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
+                dark = 3
             if not self.old_pos:
                 return
             delta = event.pos() - self.old_pos
@@ -234,6 +247,14 @@ class instance(QMainWindow):
 
         # вызывается всякий раз, когда мышь перемещается
         def mouseMoveEvent(self, event):
+            global dark
+            if dark == 2:
+                self.setStyleSheet(qdarktheme.load_stylesheet())
+            if dark == 1:
+                self.setStyleSheet(qdarktheme.load_stylesheet("light"))
+            if dark == 3:
+                self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
+                dark = 3
             if not self.old_pos:
                 return
             delta = event.pos() - self.old_pos
@@ -317,6 +338,14 @@ class instance(QMainWindow):
 
         # вызывается всякий раз, когда мышь перемещается
         def mouseMoveEvent(self, event):
+            global dark
+            if dark == 2:
+                self.setStyleSheet(qdarktheme.load_stylesheet())
+            if dark == 1:
+                self.setStyleSheet(qdarktheme.load_stylesheet("light"))
+            if dark == 3:
+                self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
+                dark = 3
             if not self.old_pos:
                 return
             delta = event.pos() - self.old_pos
@@ -694,7 +723,6 @@ class instance(QMainWindow):
             del self.chats[0]
         else:
             if update_mas:
-                """массивная ошибка"""
                 try:
                     self.sor.sendto((decode_(self.login + ' Connect to server', decode)).encode('utf-8'),
                                     self.server)  # Уведомляем сервер о подключении

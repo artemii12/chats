@@ -9,6 +9,7 @@ import sqlite3
 import functools
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QAction, QIcon
+from encoding import encode_, decode, decode_, ALPHA
 
 ip = ''
 Address = 0
