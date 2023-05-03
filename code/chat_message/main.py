@@ -1,6 +1,6 @@
 
 from variables import *
-class instance(QMainWindow):
+class message(QMainWindow):
     global ip, Address, update_mas, update_ip
 
     class SettingWindowMenuDecode(QWidget):
@@ -71,6 +71,7 @@ class instance(QMainWindow):
                 decode = int(self.encode.text())
             except:
                 self.encode.setText("3")
+
     class SettingWindowMenuColor(QWidget):
         global update_mas, update_ip
 

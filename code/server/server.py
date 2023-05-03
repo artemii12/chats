@@ -90,10 +90,12 @@ class Server(QMainWindow):
         AddressServer = int(self.Address_box.text())
         PasswordCode = str(self.Password_box.text())
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-        sock.bind((str(self.IP_box.text()),
-                   int(self.Address_box.text())))
-
+        try:
+            sock.bind((str(IPServer),
+                       int(AddressServer)))
+            print("ip/address установлен успешно")
+        except OSError:
+            print("Вы забыли сменить ip/address")
         start = True
 
     # вызывается при нажатии кнопки мыши
@@ -152,6 +154,9 @@ def server_windows():
                     f"Процесс продолжает свою работу\n"
                     f"{data}{addres}")
 
+def exept_hook(cls, exeption, traceback):
+    sys.__excepthook__(cls, exeption, traceback)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -161,4 +166,5 @@ if __name__ == '__main__':
                                                                    "primary": "#D0BCFF",
                                                                    'border': '#202124'}))
     window.show()
-    app.exec()
+    sys.excepthook = exept_hook
+    sys.exit(app.exec())

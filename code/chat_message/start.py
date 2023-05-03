@@ -1,5 +1,5 @@
 from variables import *
-from main import instance
+from main import message
 
 
 def exept_hook(cls, exeption, traceback):
@@ -8,7 +8,7 @@ def exept_hook(cls, exeption, traceback):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = instance()
+    window = message()
     window.show()
     sys.excepthook = exept_hook
     sys.exit(app.exec())
