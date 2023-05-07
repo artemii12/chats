@@ -4,6 +4,7 @@ import socket
 import threading
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, \
     QLabel, QLineEdit, QWidget, QCheckBox, QMessageBox, QToolBar
+from pynput.mouse import Controller
 from PyQt6 import QtGui, QtCore
 import sqlite3
 import functools
