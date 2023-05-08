@@ -1,29 +1,15 @@
 import sys
-import qdarktheme
 import socket
-import threading
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, \
-    QLabel, QLineEdit, QWidget, QCheckBox, QMessageBox, QToolBar
-from pynput.mouse import Controller
-from PyQt6 import QtGui, QtCore
 import sqlite3
+import threading
+import qdarktheme
 from screeninfo import get_monitors
+from PyQt6 import QtGui, QtCore
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QWidget, QCheckBox, QMessageBox, QToolBar
 from encoding import encode_, decode, decode_, ALPHA
 def pos():
-    monitor = None
-    for m in get_monitors():
-        monitor = (m.width / 2, m.height / 2)
-        return monitor
-
-
-ip = ''
-Address = 0
-update_mas = False
-system_update = False
-dark = 0
-custom_colors = {}
-update_ip = False
-exit_ = True
-login_ = ''
+    monitor = [(m.width/2, m.height/2) for m in get_monitors()]
+    return monitor[0]
+ip, Address, update_mas, system_update, dark, custom_colors, update_ip, exit_, login_ = '', 0, False, False, 0, {}, False, True, ''
