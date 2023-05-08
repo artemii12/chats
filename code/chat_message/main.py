@@ -3,6 +3,7 @@ from variables import *
 class message(QMainWindow):
     global ip, Address, update_mas, update_ip
 
+
     class SettingWindowMenuDecode(QWidget):
         global ip, Address, update_mas, update_ip
 
@@ -39,7 +40,7 @@ class message(QMainWindow):
         def update(self) -> None:
             global decode
 
-            self.setGeometry(Controller().position[0], Controller().position[1], 200, 70)
+            self.setGeometry(pos()[0], pos()[1], 200, 70)
             self.setWindowTitle('UNKNOWN INCOMING')
             self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
             self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
@@ -106,7 +107,7 @@ class message(QMainWindow):
             self.move(self.pos() + delta)
 
         def update(self):
-            self.setGeometry(Controller().position[0], Controller().position[1], 200, 210)
+            self.setGeometry(pos()[0], pos()[1], 200, 210)
             self.setWindowTitle('UNKNOWN INCOMING')
             self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
             self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
@@ -263,7 +264,7 @@ class message(QMainWindow):
 
         def update(self):
             global decode
-            self.setGeometry(Controller().position[0], Controller().position[1], 200, 100)
+            self.setGeometry(pos()[0], pos()[1], 200, 100)
             self.setWindowTitle('UNKNOWN INCOMING')
             self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
             self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
@@ -354,7 +355,7 @@ class message(QMainWindow):
 
         def update(self):
             global decode
-            self.setGeometry(Controller().position[0], Controller().position[1], 200, 200)
+            self.setGeometry(pos()[0], pos()[1], 200, 200)
             self.setWindowTitle('UNKNOWN INCOMING')
             self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
             self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors={"primary": "#D0BCFF"}))
@@ -596,7 +597,8 @@ class message(QMainWindow):
             self.update_message()
 
     def init_ui(self):
-        self.setGeometry(Controller().position[0], Controller().position[1], 450, 200)
+
+        self.setGeometry(pos()[0], pos()[1], 450, 200)
         self.setWindowTitle('UNKNOWN INCOMING')
         self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
 

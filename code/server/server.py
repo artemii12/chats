@@ -137,7 +137,7 @@ def server_windows():
                 text_utf = data.decode('utf-8')
                 print("\033[40m\033[1m\033[37m", addres, addres, '\n', text_utf, '\n')
 
-                if addres not in client and PasswordCode == text_utf:
+                if addres not in client:
                     client.append(addres)
 
                 for clients in client:

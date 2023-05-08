@@ -7,10 +7,16 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, \
 from pynput.mouse import Controller
 from PyQt6 import QtGui, QtCore
 import sqlite3
-import functools
+from screeninfo import get_monitors
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QAction, QIcon
 from encoding import encode_, decode, decode_, ALPHA
+def pos():
+    monitor = None
+    for m in get_monitors():
+        monitor = (m.width / 2, m.height / 2)
+        return monitor
+
 
 ip = ''
 Address = 0
