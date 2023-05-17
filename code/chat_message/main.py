@@ -1,5 +1,7 @@
 
 from variables import *
+from client import connecting_to_server, now_message, sor
+
 class message(QMainWindow):
     global ip, Address, update_mas, update_ip
 
@@ -576,15 +578,6 @@ class message(QMainWindow):
             self.setStyleSheet(qdarktheme.load_stylesheet(custom_colors=custom_colors))
             dark = 3
             """массивная ошибка"""
-        if ip != '' and update_ip:
-            self.server = ip, Address  # Данные сервера
-            self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.sor.bind(('', 0))  # Задаем сокет как клиент
-            try:
-                self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
-                                self.server)  # Уведомляем сервер о подключении
-            except socket.gaierror as ert:
-                pass
             update_ip = False
 
         if not self.old_pos:
@@ -693,12 +686,8 @@ class message(QMainWindow):
         while exit_:
             print("activet")
             try:
-                data = self.sor.recv(1024)
-                self.text_utf = data.decode('utf-8')
-                print(self.text_utf)
-                text = encode_(self.text_utf, decode)
-                print(text)
-                self.chats.append(text)
+                data = sor.recv(1024)
+                self.chats.append(data.decode('utf-8'))
                 del self.chats[0]
 
             except ConnectionResetError:
@@ -720,15 +709,17 @@ class message(QMainWindow):
             dark = 3
             system_update = False
 
-        self.text = self.textBox3.text()
+
         if ip == '':
             self.chats.append('ip and address were not added to the settings')
             del self.chats[0]
         else:
             if update_mas:
                 try:
-                    self.sor.sendto((decode_(self.login + ' Connect to server', decode)).encode('utf-8'),
-                                    self.server)  # Уведомляем сервер о подключении
+
+                    sor.sendto((f'{self.login} Connect to server').encode('utf-8'),
+                               (ip, Address))  # Уведомляем сервер о подключении
+
                 except socket.gaierror as ert:
                     self.server = ip, Address
                     self.chats.append(f'Не верно введен ip|adress {self.server[0], self.server[1]}')
@@ -738,13 +729,13 @@ class message(QMainWindow):
                 self.chats.append(f'the ip address is not verified: {ip}:{Address}')
                 del self.chats[0]
             try:
-            # отправка сообщений
-                self.sor.sendto((decode_(str('[' + self.login + ']' + self.text), decode)).encode('utf-8'), self.server)
+                sor.sendto((f'[{login_}] {self.textBox3.text()}').encode('utf-8'), (ip, Address))
+
             except:
                 self.chats.append(f'the ip address is not verified: {ip}:{Address}')
                 del self.chats[0]
             update_mas = False
-        self.chats.append(f'[{self.login}]-{self.text}')
+        self.chats.append(f'[{self.login}]-{self.textBox3.text()}')
         del self.chats[0]
         for i in range(1, 9):
             exec(f'self.sms_text_{i}.setText(f"{self.chats[i - 1]}")')
@@ -864,17 +855,6 @@ class message(QMainWindow):
         global ip, Address, login_
         self.login = self.textBox1.text()
         self.password = self.textBox2.text()
-        if ip == '':
-            self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.sor.bind(('', 0))  # Задаем сокет как клиент
-        else:
-            self.server = ip, Address  # Данные сервера
-            self.sor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.sor.bind(('', 0))  # Задаем сокет как клиент
-
-            self.sor.sendto((self.login + ' Connect to server').encode('utf-8'),
-                            self.server)  # Уведомляем сервер о подключении
-
         sql = sqlite3.connect('system_data.db')
         cursor = sql.cursor()
         sqlite_select_query = """SELECT * from data"""

@@ -135,24 +135,25 @@ def server_windows():
             try:
                 data, addres = sock.recvfrom(1024)
                 text_utf = data.decode('utf-8')
-                print("\033[40m\033[1m\033[37m", addres, addres, '\n', text_utf, '\n')
-
+                print(text_utf)
                 if addres not in client:
-                    client.append(addres)
+                    client.append(addres) # Если такого клиента нету , то добавить
 
                 for clients in client:
-                    if addres == clients:
-                        pass
-                        #  sock.sendto(b'You have been joined to the server', clients)
-                    else:
-                        sock.sendto(data, clients)
+                    if clients == addres:
+                        continue  # Не отправлять данные клиенту, который их прислал
+                    sock.sendto(data, clients)
 
             except ConnectionResetError:
                 data, addres = sock.recvfrom(1024)
                 print(
                     f"Удаленный хост принудительно разорвал существующее подключение\n"
                     f"Процесс продолжает свою работу\n"
-                    f"{data}{addres}")
+                    f"{data}{addres}", )
+                for clients in client:
+                    if clients == addres:
+                        continue  # Не отправлять данные клиенту, который их прислал
+                    sock.sendto(data, clients)
 
 def exept_hook(cls, exeption, traceback):
     sys.__excepthook__(cls, exeption, traceback)
