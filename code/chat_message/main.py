@@ -1,6 +1,6 @@
 
 from variables import *
-from client import connecting_to_server, now_message, sor
+from client import connecting_to_server, now_message, sor, registr_password
 
 class message(QMainWindow):
     global ip, Address, update_mas, update_ip
@@ -556,6 +556,7 @@ class message(QMainWindow):
         self.control = True
         self.old_pos = None
         self.update_ip = False
+        self.password_server = False
 
     # вызывается при нажатии кнопки мыши
     def mousePressEvent(self, event):
@@ -688,7 +689,14 @@ class message(QMainWindow):
             print("activet")
             try:
                 data = sor.recv(1024)
-                self.chats.append(decode_(data.decode('utf-8')))
+                if data.decode('utf-8') == 'Введите пароль сервера:':
+                    self.password_server = True
+                    self.chats.append(data.decode('utf-8'))
+                elif data.decode('utf-8') == 'Пароль введен верно. Вы вошли на сервер':
+                    self.password_server = False
+                    self.chats.append(data.decode('utf-8'))
+                else:
+                    self.chats.append(decode_(data.decode('utf-8')))
                 del self.chats[0]
 
             except ConnectionResetError:
@@ -729,7 +737,12 @@ class message(QMainWindow):
                 self.chats.append(f'the ip address is not verified: {ip}:{Address}')
                 del self.chats[0]
             try:
-                now_message(ip, Address, self.login, self.textBox3.text(), decode)
+                if self.password_server:
+                    registr_password(ip, Address, self.textBox3.text())
+                else:
+                    now_message(ip, Address, self.login, self.textBox3.text(), decode)
+
+
             except:
                 self.chats.append(f'the ip address is not verified: {ip}:{Address}')
                 del self.chats[0]

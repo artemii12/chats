@@ -111,19 +111,35 @@ class Server(QMainWindow):
 
 def server_windows():
     global sock, client, groups, sock
-    global start, PasswordCode
+    global start, PasswordCode, temporary_list
     if start:
         while 1:
             try:
                 data, addres = sock.recvfrom(1024)
                 text_utf = data.decode('utf-8')
                 print(text_utf)
+
+
                 if addres not in client:
-                    client.append(addres) # Если такого клиента нету , то добавить
+                    if str(PasswordCode) == '':
+                        client.append(addres)
+                    else:
+                        if addres not in temporary_list:
+                            sock.sendto('Введите пароль сервера:'.encode('utf-8'), addres)
+                            temporary_list.append(addres)  # Если такого клиента нету , то добавить
+
+                        elif addres in temporary_list:
+                            if text_utf == PasswordCode:
+                                print('good job')
+                                sock.sendto('Пароль введен верно. Вы вошли на сервер'.encode('utf-8'), addres)
+                                client.append(addres)
+                            else:
+                                sock.sendto('Введите пароль сервера:'.encode('utf-8'), addres)
 
                 for clients in client:
                     if clients == addres:
                         continue  # Не отправлять данные клиенту, который их прислал
+
                     sock.sendto(data, clients)
 
             except ConnectionResetError:

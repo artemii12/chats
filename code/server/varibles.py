@@ -14,6 +14,7 @@ AddressServer = 0
 PasswordCode = ''
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((IPServer, AddressServer))
+temporary_list = []
 client = []  # Массив где храним адреса клиентов
 groups = []
 start = False
