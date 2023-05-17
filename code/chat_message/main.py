@@ -74,6 +74,7 @@ class message(QMainWindow):
                 decode = int(self.encode.text())
             except:
                 self.encode.setText("3")
+            print(decode)
 
     class SettingWindowMenuColor(QWidget):
         global update_mas, update_ip
@@ -687,7 +688,7 @@ class message(QMainWindow):
             print("activet")
             try:
                 data = sor.recv(1024)
-                self.chats.append(data.decode('utf-8'))
+                self.chats.append(decode_(data.decode('utf-8')))
                 del self.chats[0]
 
             except ConnectionResetError:
@@ -699,7 +700,7 @@ class message(QMainWindow):
                 exec(f'self.sms_text_{i}.resize(self.sms_text_{i}.sizeHint())')
 
     def update_message(self):
-        global update_mas, ip, Address, error, dark, custom_colors, system_update, update_ip
+        global update_mas, ip, Address, error, dark, custom_colors, system_update, update_ip, decode
         if dark == 2:
             self.setStyleSheet(qdarktheme.load_stylesheet())
         if dark == 1:
@@ -728,7 +729,7 @@ class message(QMainWindow):
                 self.chats.append(f'the ip address is not verified: {ip}:{Address}')
                 del self.chats[0]
             try:
-                now_message(ip, Address, self.login, self.textBox3.text())
+                now_message(ip, Address, self.login, self.textBox3.text(), decode)
             except:
                 self.chats.append(f'the ip address is not verified: {ip}:{Address}')
                 del self.chats[0]
