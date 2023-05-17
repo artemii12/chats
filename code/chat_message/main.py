@@ -716,9 +716,8 @@ class message(QMainWindow):
         else:
             if update_mas:
                 try:
+                    connecting_to_server(ip, Address, self.login)
 
-                    sor.sendto((f'{self.login} Connect to server').encode('utf-8'),
-                               (ip, Address))  # Уведомляем сервер о подключении
 
                 except socket.gaierror as ert:
                     self.server = ip, Address
@@ -729,8 +728,7 @@ class message(QMainWindow):
                 self.chats.append(f'the ip address is not verified: {ip}:{Address}')
                 del self.chats[0]
             try:
-                sor.sendto((f'[{login_}] {self.textBox3.text()}').encode('utf-8'), (ip, Address))
-
+                now_message(ip, Address, self.login, self.textBox3.text())
             except:
                 self.chats.append(f'the ip address is not verified: {ip}:{Address}')
                 del self.chats[0]
